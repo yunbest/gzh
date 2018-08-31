@@ -10,12 +10,14 @@ namespace app\admin\controller;
 
 use cmf\controller\AdminBaseController;
 use app\admin\model\CategoryModel;
+use think\Db;
 class AdminCategoryController extends AdminBaseController
 {
 
     public function index()
     {
-
+     $data = Db::name('category')->select()->toArray();
+        $this->assign('vo',$data);
        return $this->fetch();
     }
 
@@ -49,6 +51,15 @@ class AdminCategoryController extends AdminBaseController
         }
 
         $this->success('添加成功!', url('AdminCategory/index'));
-        dump($this->request->param());
+
+    }
+
+
+    /**
+     *修改分类
+     */
+    public function edit()
+    {
+        return $this->fetch();
     }
 }
