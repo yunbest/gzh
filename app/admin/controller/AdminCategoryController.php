@@ -10,6 +10,7 @@ namespace app\admin\controller;
 
 use cmf\controller\AdminBaseController;
 use app\admin\model\CategoryModel;
+use Qiniu\Http\Request;
 use think\Db;
 class AdminCategoryController extends AdminBaseController
 {
@@ -37,7 +38,7 @@ class AdminCategoryController extends AdminBaseController
         $CategoryModel = new CategoryModel();
 
         $data = $this->request->param();
-
+        //表单验证
         $result = $this->validate($data, 'AdminCategory');
 
         if ($result !== true) {
@@ -56,10 +57,23 @@ class AdminCategoryController extends AdminBaseController
 
 
     /**
-     *修改分类
+     *编辑分类
      */
     public function edit()
     {
+
+        $id =   $this->request->param('id','','intval');
+        $data = Db::name('category')->where('id',$id)->find();
+        $this-> assign('vo',$data);
         return $this->fetch();
+    }
+
+    /**
+     *编辑分类提交
+     */
+    public function editPost()
+    {
+        $data = $this->request->param();
+
     }
 }
