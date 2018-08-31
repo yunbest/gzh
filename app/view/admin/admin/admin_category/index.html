@@ -26,7 +26,7 @@
                     <th width="50">{$vo.id}</th>
                     <th>{$vo.name}</th>
                     <th>{$vo.description}</th>
-                    <th width="180"><a href="{:url('AdminCategory/edit',['id'=>$vo.id])}">编辑</a>&nbsp<a class="js-ajax-delete" href="{:url('AdminCategory/delete',['id'=>$vo.id])}">删除</a></th>
+                    <th width="180"><a href="{:url('AdminCategory/add',['id'=>$vo.id])}">{:lang('ADD_SUB_MENU')}</a>&nbsp&nbsp<a href="{:url('AdminCategory/edit',['id'=>$vo.id])}">编辑</a>&nbsp&nbsp<a class="js-ajax-delete" href="{:url('AdminCategory/delete',['id'=>$vo.id])}">删除</a></th>
                 </tr>
             </volist>
 

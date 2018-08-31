@@ -16,8 +16,11 @@
                             <label for="input-parent"><span class="form-required">*</span>上级</label>
                             <div>
                                 <select class="form-control" name="parent_id" id="input-parent">
-                                    <option value="0">作为一级分类</option>
-
+                                    <if condition="$vo.name neq null">
+                                    <option value="{$vo.id}">{$vo.name}</option>
+                                    <else/>
+                                        <option value="{$vo.id}">第一级菜单</option>
+                                    </if>
                                 </select>
                             </div>
                         </div>

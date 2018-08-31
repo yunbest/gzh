@@ -27,6 +27,10 @@ class AdminCategoryController extends AdminBaseController
      */
     public function add()
     {
+        $id = $this->request->param('id','0','intval');
+        $data = Db::name('category')->where('id',$id)->find();
+
+        $this->assign('vo',$data);
         return $this->fetch();
     }
 

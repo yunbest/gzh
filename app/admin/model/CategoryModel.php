@@ -8,6 +8,7 @@
 
 namespace app\admin\model;
 
+use tree\Tree;
 use think\Model;
 class CategoryModel extends Model
 {
@@ -37,5 +38,10 @@ class CategoryModel extends Model
 
 
         return $result;
+    }
+
+    public function getCategory($id = '')
+    {
+        $tree = new Tree();
     }
 }
