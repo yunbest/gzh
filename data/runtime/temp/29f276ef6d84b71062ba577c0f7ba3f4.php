@@ -1,4 +1,4 @@
-<?php if (!defined('THINK_PATH')) exit(); /*a:1:{s:37:"app/view/admin/admin\index\index.html";i:1535607503;}*/ ?>
+<?php if (!defined('THINK_PATH')) exit(); /*a:1:{s:37:"app/view/admin/admin\index\index.html";i:1535968727;}*/ ?>
 <!DOCTYPE html>
 <html lang="zh_CN" style="overflow: hidden;">
 <head>

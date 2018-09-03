@@ -45,7 +45,8 @@ class AdminArticleController extends AdminBaseController
      */
     public function add()
     {
-
+        $re = Db::name('category')->where('parent_id','0')->select()->toArray();
+        $this->assign('re',$re);
         return $this->fetch();
     }
 
@@ -61,7 +62,10 @@ class AdminArticleController extends AdminBaseController
             $data['article']['article_status'] = 0;
             $data['article']['is_top'] = 0;
             $data['article']['recommended'] = 0;
-
+            //判断是否用二级分类
+if ($data['article']['categories_erji']){
+    $data['article']['categories'] = $data['article']['categories_erji'];
+}
             $post   = $data['article'];
 
             $result = $this->validate($post, 'AdminArticle');

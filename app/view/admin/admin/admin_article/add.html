@@ -34,17 +34,36 @@
     </ul>
     <form action="{:url('AdminArticle/addPost')}" method="post" class="form-horizontal js-ajax-form margin-top-20">
         <div class="row">
-            <div class="col-md-9">
+            <div class="col-md-8">
                 <table class="table table-bordered">
                     <tr>
                         <th width="100">分类<span class="form-required">*</span></th>
+
+
                         <td>
-                            <input class="form-control" type="text" style="width:400px;" required value=""
-                                   placeholder="请选择分类" onclick="doSelectCategory();" id="js-categories-name-input"
-                                   readonly/>
-                            <input class="form-control" type="hidden" value="" name="article[categories]"
-                                   id="js-categories-id-input"/>
+                            <select class="form-control" name="article[categories]" id="input-parent" onchange="category()">
+
+                                <volist name="re" id="re">
+                                    <option value="{$re.id}">{$re.name}</option>
+                                </volist>>
+                            </select>
                         </td>
+
+
+
+                    </tr>
+
+                    <tr style="display:none" id="erji">
+                        <th width="100" >第二级<span class="form-required">*</span></th>
+
+                        <td>
+
+                            <select class="form-control" name="article[categories_erji]" id="house"  >
+
+                            </select>
+
+                        </td>
+
                     </tr>
                     <tr>
                         <th>标题<span class="form-required">*</span></th>
@@ -167,6 +186,29 @@
         });
 
     });
+
+    function category() {
+        var id = $('#input-parent').val();
+        var url = "{:url('AdminCategory/selectAjax')}"
+        if(id > 0){
+            $.ajax({
+                url:url,
+                data:{'id':id},
+                dataType:'json',
+                type:'post',
+                success:function (re) {
+                    $('#house').html($.map(re,function (value,key) {
+                        return "<option value='"+value.id+"'>"+value.name+"</option>";
+                    }));
+                    $('#erji').show();
+                }
+            });
+
+
+        }else{
+            $('#erji').css('display','none');
+        }
+    }
 
     function doSelectCategory() {
         var selectedCategoriesId = $('#js-categories-id-input').val();

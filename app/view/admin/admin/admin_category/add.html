@@ -12,18 +12,68 @@
             <form class="js-ajax-form" action="{:url('AdminCategory/addPost')}" method="post">
                 <div class="tab-content">
                     <div class="tab-pane active" id="A">
+
+                        <if condition="$vo.name">
+                            <div class="form-group">
+
+                                <label for="input-parent"><span class="form-required">*</span>上级</label>
+                                <div>
+                                    <select class="form-control" name="parent_id" id="input-parent" >
+                                        <option value="{$vo.id}">{$vo.name}</option>
+
+                                    </select>
+
+                                </div>
+                            </div>
+                            <else/>
                         <div class="form-group">
+
                             <label for="input-parent"><span class="form-required">*</span>上级</label>
                             <div>
-                                <select class="form-control" name="parent_id" id="input-parent">
-                                    <if condition="$vo.name neq null">
-                                    <option value="{$vo.id}">{$vo.name}</option>
-                                    <else/>
-                                        <option value="{$vo.id}">第一级菜单</option>
-                                    </if>
+                                <select class="form-control" name="parent_id" id="input-parent" onchange="category()">
+                                    <option value="0">第一级分类</option>
+                                    <volist name="re" id="re">
+                                        <option value="{$re.id}">{$re.name}</option>
+                                    </volist>>
+                                </select>
+
+                            </div>
+                        </div>
+
+                        <div class="form-group" id="erji" style="display: none">
+                            <label for="house"><span class="form-required">*</span>第二级</label>
+                            <div>
+
+                                <select class="form-control" name="parent_id_erji" id="house"  >
+
                                 </select>
                             </div>
                         </div>
+                        </if>
+                        <script>
+                            function category() {
+                                var id = $('#input-parent').val();
+                                var url = "{:url('AdminCategory/selectAjax')}"
+                                if(id > 0){
+                                    $.ajax({
+                                        url:url,
+                                        data:{'id':id},
+                                        dataType:'json',
+                                        type:'post',
+                                        success:function (re) {
+                                            $('#house').html($.map(re,function (value,key) {
+                                                return "<option value='"+value.id+"'>"+value.name+"</option>";
+                                            }));
+                                            $('#erji').css('display','block');
+                                        }
+                                    });
+
+
+                                }else{
+                                    $('#erji').css('display','none');
+                                }
+                            }
+                        </script>
                         <div class="form-group">
                             <label for="input-name"><span class="form-required">*</span>分类名称</label>
                             <div>
@@ -53,6 +103,8 @@
         </div>
     </div>
 </div>
-<script type="text/javascript" src="__STATIC__/js/admin.js"></script>
+<script type="text/javascript" src="__STATIC__/js/admin.js">
+
+</script>
 </body>
 </html>

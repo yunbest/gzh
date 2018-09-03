@@ -21,7 +21,7 @@
             </tr>
 
             <volist name="vo" id="vo">
-                <tr class="listAjax-{$vo.id}"  onclick="categoryAjax({$vo.id})" id="append{$vo.id}">
+                <tr class="listAjax-{$vo.id}"  onclick="categoryAjax({$vo.id})" id="append{$vo.id}" hd="0">
                     <th width="50">{$vo.list_order}</th>
                     <th width="50">{$vo.id}</th>
                     <th>{$vo.name}</th>
@@ -41,29 +41,27 @@
 <script>
 
     function categoryAjax(id) {
-        var url = "{:url('AdminCategory/ajax')}"
-       $.ajax({
-           url: url,
-           data:{'id':id},
-           dataType:'json',
-           type:'post',
-           success(data,){
-               var html=""
-               $.each(data,function (m,n) {
-                 html+="<tr class='a'><th>"+n.list_order+"</th> <th width=\"50\">"+n.id+"</th> <th>&nbsp;&nbsp;├─"+n.name+"</th> <th>"+n.description+"</th> <th width=\"180\"><a href=\"{:url('AdminCategory/add',['id'=>"+n.id+"])}\">{:lang('ADD_SUB_MENU')}</a>&nbsp&nbsp<a href=\"{:url('AdminCategory/edit',['id'=>"+n.id+"])}\">编辑</a>&nbsp&nbsp<a class=\"js-ajax-delete\" href=\"{:url('AdminCategory/delete',['id'=>"+n.id+"])}\">删除</a></th></tr>"
+        var hd = $(".listAjax-"+id).attr("hd");
+        if(hd == 1){
+           $(".a").hide()
+            $(".listAjax-" + id).attr("hd", "0");
+        }else {
+            var url = "{:url('AdminCategory/ajax')}";
+            $.ajax({
+                url: url,
+                data: {'id': id},
+                dataType: 'json',
+                type: 'post',
+                success(data,) {
+                    var html = data
 
 
-               })
+                    $(".listAjax-" + id).after(html)
+                    $(".listAjax-" + id).attr("hd", "1");
 
-            $(".listAjax-"+id).after(html)
-
-                if ($("#a").is(':hidden')){
-                    $("#a").show()
-                }else {
-                    $("#a").hidden()
                 }
-           }
-       })
+            })
+        }
     }
 </script>
 <script src="__STATIC__/js/admin.js"></script>

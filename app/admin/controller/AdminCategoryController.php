@@ -17,7 +17,7 @@ class AdminCategoryController extends AdminBaseController
 
     public function index()
     {
-     $data = Db::name('category')->where('parent_id',0)->where('delete_time','0')->select()->toArray();
+     $data = Db::name('category')->where('parent_id','0')->where('delete_time','0')->select()->toArray();
 
      $tree = new Tree();
      $re =  $tree->getT($data,0,0);
@@ -26,14 +26,42 @@ class AdminCategoryController extends AdminBaseController
        return $this->fetch();
     }
 
+//    public function index()
+//    {
+//        $CategoryModel = new CategoryModel();
+//        $categoryTree        = $CategoryModel->adminCategoryTableTree();
+//
+//        $this->assign('category_tree', $categoryTree);
+//        return $this->fetch();
+//    }
     /**
      *分类ajax返回
      */
     public function ajax()
     {
          $id = $this->request->param('id','0','intval');
-         $data = Db::name('category')->where('parent_id',$id)->select();
-         return json($data);
+         $data = Db::name('category')->where('parent_id',$id)->select()->toArray();
+$tpl = '';
+        foreach ($data as $v){
+                $tpl.= "<tr class='a'><th>" . $v['list_order'] . "</th> <th width=\"50\">" .$v['id']. "</th> <th>&nbsp;&nbsp;├─" .$v['name']. "</th>
+                            <th>".$v['description']."</th> 
+                             <th width=\"180\"><a href=" . url("AdminCategory/add", ["parent" => $v['id']]) .">添加子菜单</a>&nbsp&nbsp<a href=" . url("AdminCategory/edit", ["parent" => $v['id']]) .">编辑</a>&nbsp&nbsp<a href=" . url("AdminCategory/delete", ["parent" => $v['id']]) .">删除</a></th></tr>";
+        }
+return json($tpl);
+    }
+
+    /**
+     *分类联动ajax
+     */
+    public function selectAjax(){
+        $id = $this->request->param('id','0','intval');
+
+        $data = Db::name('category')
+            ->where('parent_id',$id)
+
+            ->select();
+        return json($data);
+
     }
     /**
      *添加文章分类
@@ -41,6 +69,8 @@ class AdminCategoryController extends AdminBaseController
     public function add()
     {
         $id = $this->request->param('id','0','intval');
+        $re = Db::name('category')->where('parent_id','0')->select()->toArray();
+
         $tree     = new Tree();
         $data = Db::name('category')->where('id',$id)->find();
         $result   = Db::name('category')->order(["list_order" => "ASC"])->select();
@@ -54,12 +84,13 @@ class AdminCategoryController extends AdminBaseController
         $selectCategory = $tree->getTree(0, $str);
         $this->assign("select_category", $selectCategory);
         $this->assign('vo',$data);
+        $this->assign('re',$re);
         return $this->fetch();
 
     }
 
     /**
-     *添加文章提交
+     *添加分类提交
      */
     public function addPost()
     {

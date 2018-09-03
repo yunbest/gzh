@@ -1,4 +1,4 @@
-<?php if (!defined('THINK_PATH')) exit(); /*a:2:{s:46:"app/view/admin/admin\admin_category\index.html";i:1535945943;s:48:"F:\myapp\wxgzh\app\view\admin\public\header.html";i:1535607506;}*/ ?>
+<?php if (!defined('THINK_PATH')) exit(); /*a:2:{s:46:"app/view/admin/admin\admin_category\index.html";i:1535972557;s:48:"F:\myapp\wxgzh\app\view\admin\public\header.html";i:1535607506;}*/ ?>
 <!DOCTYPE html>
 <html>
 <head>
@@ -102,7 +102,7 @@
             </tr>
 
             <?php if(is_array($vo) || $vo instanceof \think\Collection || $vo instanceof \think\Paginator): $i = 0; $__LIST__ = $vo;if( count($__LIST__)==0 ) : echo "" ;else: foreach($__LIST__ as $key=>$vo): $mod = ($i % 2 );++$i;?>
-                <tr class="listAjax-<?php echo $vo['id']; ?>"  onclick="categoryAjax(<?php echo $vo['id']; ?>)" id="append<?php echo $vo['id']; ?>">
+                <tr class="listAjax-<?php echo $vo['id']; ?>"  onclick="categoryAjax(<?php echo $vo['id']; ?>)" id="append<?php echo $vo['id']; ?>" hd="0">
                     <th width="50"><?php echo $vo['list_order']; ?></th>
                     <th width="50"><?php echo $vo['id']; ?></th>
                     <th><?php echo $vo['name']; ?></th>
@@ -122,29 +122,27 @@
 <script>
 
     function categoryAjax(id) {
-        var url = "<?php echo url('AdminCategory/ajax'); ?>"
-       $.ajax({
-           url: url,
-           data:{'id':id},
-           dataType:'json',
-           type:'post',
-           success(data,){
-               var html=""
-               $.each(data,function (m,n) {
-                 html+="<tr class='a'><th>"+n.list_order+"</th> <th width=\"50\">"+n.id+"</th> <th>&nbsp;&nbsp;├─"+n.name+"</th> <th>"+n.description+"</th> <th width=\"180\"><a href=\"<?php echo url('AdminCategory/add',['id'=>"+n.id+"]); ?>\"><?php echo lang('ADD_SUB_MENU'); ?></a>&nbsp&nbsp<a href=\"<?php echo url('AdminCategory/edit',['id'=>"+n.id+"]); ?>\">编辑</a>&nbsp&nbsp<a class=\"js-ajax-delete\" href=\"<?php echo url('AdminCategory/delete',['id'=>"+n.id+"]); ?>\">删除</a></th></tr>"
+        var hd = $(".listAjax-"+id).attr("hd");
+        if(hd == 1){
+           $(".a").hide()
+            $(".listAjax-" + id).attr("hd", "0");
+        }else {
+            var url = "<?php echo url('AdminCategory/ajax'); ?>";
+            $.ajax({
+                url: url,
+                data: {'id': id},
+                dataType: 'json',
+                type: 'post',
+                success(data,) {
+                    var html = data
 
 
-               })
+                    $(".listAjax-" + id).after(html)
+                    $(".listAjax-" + id).attr("hd", "1");
 
-            $(".listAjax-"+id).after(html)
-
-                if ($("#a").is(':hidden')){
-                    $("#a").show()
-                }else {
-                    $("#a").hidden()
                 }
-           }
-       })
+            })
+        }
     }
 </script>
 <script src="/static/js/admin.js"></script>

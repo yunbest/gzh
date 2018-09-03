@@ -34,7 +34,7 @@ class ArticleModel extends Model
      */
     public function categories()
     {
-        return $this->belongsToMany('CategoryModel', 'category', 'category_id', 'id');
+        return $this->belongsToMany('CategoryModel', 'category', 'id', 'category_id');
     }
 
     public function adminAddArticle($data, $categories)
@@ -52,11 +52,11 @@ class ArticleModel extends Model
             $categories = explode(',', $categories);
         }
 
-        $this->categories()->save($categories);
+//        $this->categories()->save($categories);
 
-        $data['post_keywords'] = str_replace('，', ',', $data['post_keywords']);
+        $data['article_keywords'] = str_replace('，', ',', $data['article_keywords']);
 
-        $keywords = explode(',', $data['post_keywords']);
+        $keywords = explode(',', $data['article_keywords']);
 
 //        $this->addTags($keywords, $this->id);
 
