@@ -16,25 +16,33 @@ class AdminArticleController extends AdminBaseController
     public function index()
     {
         $param = $this->request->param();
+        if (!empty($param)) {
+            if ($param['category'] != 0) {
+                $param['category'] = $param['category_id_erji'];
+                unset($param['category_id_erji']);
 
+            }
+        }
         $categoryId = $this->request->param('category', 0, 'intval');
 
         $Service = new ArticleService();
         $data        = $Service->adminArticleList($param);
 
 
-        $data->appends($param);
+
 
         $CategoryModel = new CategoryModel();
         $categoryTree        = $CategoryModel->adminCategoryTree($categoryId);
-
+        //第一级分类
+        $re = Db::name('category')->where('parent_id','0')->select()->toArray();
+        $this->assign('re',$re);
         $this->assign('start_time', isset($param['start_time']) ? $param['start_time'] : '');
         $this->assign('end_time', isset($param['end_time']) ? $param['end_time'] : '');
         $this->assign('keyword', isset($param['keyword']) ? $param['keyword'] : '');
-        $this->assign('articles', $data->items());
-        $this->assign('category_tree', $categoryTree);
+
+
         $this->assign('category', $categoryId);
-        $this->assign('page', $data->render());
+
 
 
         return $this->fetch();

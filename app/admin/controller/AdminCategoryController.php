@@ -45,7 +45,7 @@ $tpl = '';
         foreach ($data as $v){
                 $tpl.= "<tr class='a'><th>" . $v['list_order'] . "</th> <th width=\"50\">" .$v['id']. "</th> <th>&nbsp;&nbsp;├─" .$v['name']. "</th>
                             <th>".$v['description']."</th> 
-                             <th width=\"180\"><a href=" . url("AdminCategory/add", ["parent" => $v['id']]) .">添加子菜单</a>&nbsp&nbsp<a href=" . url("AdminCategory/edit", ["parent" => $v['id']]) .">编辑</a>&nbsp&nbsp<a href=" . url("AdminCategory/delete", ["parent" => $v['id']]) .">删除</a></th></tr>";
+                             <th width=\"180\"><a href=" . url("AdminCategory/add", ["id" => $v['id']]) .">添加子菜单</a>&nbsp&nbsp<a href=" . url("AdminCategory/edit", ["id" => $v['id']]) .">编辑</a>&nbsp&nbsp<a href=" . url("AdminCategory/delete", ["id" => $v['id']]) .">删除</a></th></tr>";
         }
 return json($tpl);
     }

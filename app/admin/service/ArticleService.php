@@ -9,6 +9,7 @@
 namespace app\admin\service;
 
 use app\admin\model\ArticleModel;
+
 class ArticleService
 {
 
@@ -17,11 +18,6 @@ class ArticleService
 
 
 
-        $join = [
-            ['cmf_category b', 'a.category_id = b.id']
-        ];
-
-        $field = 'a.*';
 
 
 
@@ -29,14 +25,7 @@ class ArticleService
 
 
 
-        $ArticleModel = new ArticleModel();
-        $articles        = $ArticleModel->alias('a')->field($field)
-            ->join($join)
 
-
-            ->paginate(10);
-
-        return $articles;
 
     }
 }

@@ -1,4 +1,4 @@
-<?php if (!defined('THINK_PATH')) exit(); /*a:2:{s:45:"app/view/admin/admin\admin_article\index.html";i:1535940597;s:48:"F:\myapp\wxgzh\app\view\admin\public\header.html";i:1535607506;}*/ ?>
+<?php if (!defined('THINK_PATH')) exit(); /*a:2:{s:45:"app/view/admin/admin\admin_article\index.html";i:1535977190;s:48:"F:\myapp\wxgzh\app\view\admin\public\header.html";i:1535607506;}*/ ?>
 <!DOCTYPE html>
 <html>
 <head>
@@ -89,10 +89,22 @@
     </ul>
     <form class="well form-inline margin-top-20" method="post" action="<?php echo url('AdminArticle/index'); ?>">
         分类:
-        <select class="form-control" name="category" style="width: 140px;">
+        <select class="form-control" name="category" style="width: 140px;" onchange="category1()" id="input-parent">
             <option value='0'>全部</option>
 
+
+                <?php if(is_array($re) || $re instanceof \think\Collection || $re instanceof \think\Paginator): $i = 0; $__LIST__ = $re;if( count($__LIST__)==0 ) : echo "" ;else: foreach($__LIST__ as $key=>$re): $mod = ($i % 2 );++$i;?>
+                    <option value="<?php echo $re['id']; ?>"><?php echo $re['name']; ?></option>
+                <?php endforeach; endif; else: echo "" ;endif; ?>>
+
+
         </select> &nbsp;&nbsp;
+
+        <span id="erji" style="display: none">  第二级分类
+        <select class="form-control" name="category_id_erji" id="house"  >
+
+        </select>
+        </span>
         时间:
         <input type="text" class="form-control js-bootstrap-datetime" name="start_time"
                value="<?php echo (isset($start_time) && ($start_time !== '')?$start_time:''); ?>"
@@ -106,6 +118,31 @@
         <input type="submit" class="btn btn-primary" value="搜索"/>
         <a class="btn btn-danger" href="<?php echo url('AdminArticle/index'); ?>">清空</a>
     </form>
+    <script>
+        //二级联动
+        function category1() {
+            var id = $('#input-parent').val();
+            var url = "<?php echo url('AdminCategory/selectAjax'); ?>"
+            if(id > 0){
+                $.ajax({
+                    url:url,
+                    data:{'id':id},
+                    dataType:'json',
+                    type:'post',
+                    success:function (re) {
+                        $('#house').html($.map(re,function (value,key) {
+                            return "<option value='"+value.id+"'>"+value.name+"</option>";
+                        }));
+                        $('#erji').show();
+                    }
+                });
+
+
+            }else{
+                $('#erji').css('display','none');
+            }
+        }
+    </script>
     <form class="js-ajax-form" action="" method="post">
         <div class="table-actions">
             <?php if(!(empty($category) || (($category instanceof \think\Collection || $category instanceof \think\Paginator ) && $category->isEmpty()))): ?>
@@ -294,8 +331,10 @@
 
     </form>
 </div>
+
 <script src="/static/js/admin.js"></script>
 <script>
+
 
     function reloadPage(win) {
         win.location.reload();

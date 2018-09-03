@@ -8,10 +8,22 @@
     </ul>
     <form class="well form-inline margin-top-20" method="post" action="{:url('AdminArticle/index')}">
         分类:
-        <select class="form-control" name="category" style="width: 140px;">
+        <select class="form-control" name="category" style="width: 140px;" onchange="category1()" id="input-parent">
             <option value='0'>全部</option>
 
+
+                <volist name="re" id="re">
+                    <option value="{$re.id}">{$re.name}</option>
+                </volist>>
+
+
         </select> &nbsp;&nbsp;
+
+        <span id="erji" style="display: none">  第二级分类
+        <select class="form-control" name="category_id_erji" id="house"  >
+
+        </select>
+        </span>
         时间:
         <input type="text" class="form-control js-bootstrap-datetime" name="start_time"
                value="{$start_time|default=''}"
@@ -25,6 +37,31 @@
         <input type="submit" class="btn btn-primary" value="搜索"/>
         <a class="btn btn-danger" href="{:url('AdminArticle/index')}">清空</a>
     </form>
+    <script>
+        //二级联动
+        function category1() {
+            var id = $('#input-parent').val();
+            var url = "{:url('AdminCategory/selectAjax')}"
+            if(id > 0){
+                $.ajax({
+                    url:url,
+                    data:{'id':id},
+                    dataType:'json',
+                    type:'post',
+                    success:function (re) {
+                        $('#house').html($.map(re,function (value,key) {
+                            return "<option value='"+value.id+"'>"+value.name+"</option>";
+                        }));
+                        $('#erji').show();
+                    }
+                });
+
+
+            }else{
+                $('#erji').css('display','none');
+            }
+        }
+    </script>
     <form class="js-ajax-form" action="" method="post">
         <div class="table-actions">
             <notempty name="category">
@@ -222,8 +259,10 @@
 
     </form>
 </div>
+
 <script src="__STATIC__/js/admin.js"></script>
 <script>
+
 
     function reloadPage(win) {
         win.location.reload();
