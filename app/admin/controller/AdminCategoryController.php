@@ -17,7 +17,7 @@ class AdminCategoryController extends AdminBaseController
 
     public function index()
     {
-     $data = Db::name('category')->where('parent_id','0')->where('delete_time','0')->select()->toArray();
+     $data = Db::name('category')->where('pid','0')->where('is_del','0')->select()->toArray();
 
      $tree = new Tree();
      $re =  $tree->getT($data,0,0);
@@ -40,14 +40,17 @@ class AdminCategoryController extends AdminBaseController
     public function ajax()
     {
          $id = $this->request->param('id','0','intval');
-         $data = Db::name('category')->where('parent_id',$id)->select()->toArray();
-$tpl = '';
+         $data = Db::name('category')->where('pid',$id)->select()->toArray();
+        $tpl = '';
         foreach ($data as $v){
-                $tpl.= "<tr class='a'><th>" . $v['list_order'] . "</th> <th width=\"50\">" .$v['id']. "</th> <th>&nbsp;&nbsp;├─" .$v['name']. "</th>
-                            <th>".$v['description']."</th> 
-                             <th width=\"180\"><a href=" . url("AdminCategory/add", ["id" => $v['id']]) .">添加子菜单</a>&nbsp&nbsp<a href=" . url("AdminCategory/edit", ["id" => $v['id']]) .">编辑</a>&nbsp&nbsp<a href=" . url("AdminCategory/delete", ["id" => $v['id']]) .">删除</a></th></tr>";
+          $pid =  explode(',',$v['pids']);
+          $num = count($pid)-1;
+          $px = $num *20;
+            $tpl.= "<tr class='a".$id." listAjax-".$v['id']."' onclick='categoryAjax(".$v['id'].")'> <th width=\"50\">" .$v['id']. "</th> <th style='text-indent: ".$px."px'>├─" .$v['title']. "</th>
+                            <th>".$v['desc']."</th> 
+                             <th width=\"180\"><a href=" . url("AdminCategory/add", ["id" => $v['id']]) .">添加子菜单</a>&nbsp&nbsp<a href=" . url("AdminCategory/edit", ["id" => $v['id']]) .">编辑</a>&nbsp&nbsp<a href=" . url("AdminCategory/delete", ["id" => $v['id']]) ." class='js-ajax-delete' >删除</a></th></tr>";
         }
-return json($tpl);
+        return json($tpl);
     }
 
     /**
@@ -57,7 +60,7 @@ return json($tpl);
         $id = $this->request->param('id','0','intval');
 
         $data = Db::name('category')
-            ->where('parent_id',$id)
+            ->where('pid',$id)
 
             ->select();
         return json($data);
@@ -69,20 +72,13 @@ return json($tpl);
     public function add()
     {
         $id = $this->request->param('id','0','intval');
-        $re = Db::name('category')->where('parent_id','0')->select()->toArray();
+        $re = Db::name('category')->where('pid','0')->select()->toArray();
 
-        $tree     = new Tree();
         $data = Db::name('category')->where('id',$id)->find();
-        $result   = Db::name('category')->order(["list_order" => "ASC"])->select();
-        $array    = [];
-        foreach ($result as $r) {
-            $r['selected'] = $r['id'] == $id ? 'selected' : '';
-            $array[]       = $r;
-        }
-        $str = "<option value='\$id' \$selected>\$spacer \$name</option>";
-        $tree->init($array);
-        $selectCategory = $tree->getTree(0, $str);
-        $this->assign("select_category", $selectCategory);
+
+
+
+
         $this->assign('vo',$data);
         $this->assign('re',$re);
         return $this->fetch();
@@ -97,6 +93,15 @@ return json($tpl);
         $CategoryModel = new CategoryModel();
 
         $data = $this->request->param();
+        if (is_array($data['pid'])) {
+            $pid = end($data['pid']);
+            $pids = implode(',', $data['pid']);
+            $data['pids'] = $pids;
+            $data['pid'] = $pid;
+        }else{
+            $data['pids'] = $data['pid'];
+        }
+
         //表单验证
         $result = $this->validate($data, 'AdminCategory');
 
@@ -122,6 +127,8 @@ return json($tpl);
     {
 
         $id =   $this->request->param('id','','intval');
+        $re = Db::name('category')->where('pid','0')->select()->toArray();
+        $this->assign('re',$re);
         $data = Db::name('category')->where('id',$id)->find();
         $this-> assign('vo',$data);
         return $this->fetch();
@@ -151,12 +158,12 @@ return json($tpl);
             $this->error('分类不存在');
         }
         //判断有无子类
-        $categoryCount = $CategoryModel->where(['parent_id'=>$id,'delete_time'=>0])->count();
+        $categoryCount = $CategoryModel->where(['pid'=>$id,'is_del'=>0])->count();
         if($categoryCount>0){
             $this->error('该分类下有子类无法删除');
         }
 
-        $result = $CategoryModel->where('id',$id) ->update(['delete_time' => time()]);;
+        $result = $CategoryModel->where('id',$id) ->update(['is_del' => 1]);;
         if ($result){
             $this->success('删除成功');
         }else{

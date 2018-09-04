@@ -1,4 +1,4 @@
-<?php if (!defined('THINK_PATH')) exit(); /*a:2:{s:45:"app/view/admin/admin\admin_article\index.html";i:1535977190;s:48:"F:\myapp\wxgzh\app\view\admin\public\header.html";i:1535607506;}*/ ?>
+<?php if (!defined('THINK_PATH')) exit(); /*a:2:{s:45:"app/view/admin/admin\admin_article\index.html";i:1536048631;s:48:"F:\myapp\wxgzh\app\view\admin\public\header.html";i:1535607506;}*/ ?>
 <!DOCTYPE html>
 <html>
 <head>
@@ -94,7 +94,7 @@
 
 
                 <?php if(is_array($re) || $re instanceof \think\Collection || $re instanceof \think\Paginator): $i = 0; $__LIST__ = $re;if( count($__LIST__)==0 ) : echo "" ;else: foreach($__LIST__ as $key=>$re): $mod = ($i % 2 );++$i;?>
-                    <option value="<?php echo $re['id']; ?>"><?php echo $re['name']; ?></option>
+                    <option value="<?php echo $re['id']; ?>"><?php echo $re['title']; ?></option>
                 <?php endforeach; endif; else: echo "" ;endif; ?>>
 
 
@@ -131,7 +131,7 @@
                     type:'post',
                     success:function (re) {
                         $('#house').html($.map(re,function (value,key) {
-                            return "<option value='"+value.id+"'>"+value.name+"</option>";
+                            return "<option value='"+value.id+"'>"+value.title+"</option>";
                         }));
                         $('#erji').show();
                     }
@@ -187,16 +187,11 @@
                         <input type="checkbox" class="js-check-all" data-direction="x" data-checklist="js-check-x">
                     </label>
                 </th>
-                <?php if(!(empty($category) || (($category instanceof \think\Collection || $category instanceof \think\Paginator ) && $category->isEmpty()))): ?>
-                    <th width="50"><?php echo lang('SORT'); ?></th>
-                <?php endif; ?>
+
                 <th width="50">ID</th>
                 <th>标题</th>
                 <th>分类</th>
-                <th width="50">作者</th>
-                <th width="65">点击量</th>
-                <th width="65">评论量</th>
-                <th width="160">关键字/来源<br>摘要/缩略图</th>
+                <th width="160">关键字/描述/缩略图</th>
                 <th width="130">更新时间</th>
                 <th width="130">发布时间</th>
                 <th width="70">状态</th>
@@ -209,56 +204,27 @@
                         <input type="checkbox" class="js-check" data-yid="js-check-y" data-xid="js-check-x" name="ids[]"
                                value="<?php echo $vo['id']; ?>" title="ID:<?php echo $vo['id']; ?>">
                     </td>
-                    <?php if(!(empty($category) || (($category instanceof \think\Collection || $category instanceof \think\Paginator ) && $category->isEmpty()))): ?>
-                        <td>
-                            <input name="list_orders[<?php echo $vo['post_category_id']; ?>]" class="input-order" type="text"
-                                   value="<?php echo $vo['list_order']; ?>">
-                        </td>
-                    <?php endif; ?>
+                    <?php if(!(empty($category) || (($category instanceof \think\Collection || $category instanceof \think\Paginator ) && $category->isEmpty()))): endif; ?>
                     <td><b><?php echo $vo['id']; ?></b></td>
                     <td>
-                        <?php if(!(empty($category) || (($category instanceof \think\Collection || $category instanceof \think\Paginator ) && $category->isEmpty()))): ?>
-                            <a href="<?php echo cmf_url('portal/Article/index',array('id'=>$vo['id'],'cid'=>$vo['category_id'])); ?>"
-                               target="_blank"><?php echo $vo['post_title']; ?></a>
-                            <?php else: ?>
-                            <a href="<?php echo cmf_url('portal/Article/index',array('id'=>$vo['id'])); ?>"
-                               target="_blank"><?php echo $vo['post_title']; ?></a>
-                        <?php endif; ?>
+                        <?php echo $vo['title']; ?>
                     </td>
                     <td>
-                        <?php if(is_array($vo['categories']) || $vo['categories'] instanceof \think\Collection || $vo['categories'] instanceof \think\Paginator): if( count($vo['categories'])==0 ) : echo "" ;else: foreach($vo['categories'] as $key=>$voo): ?>
-                            <span class="label label-default">
-                                <a href="<?php echo cmf_url('portal/List/index',array('id'=>$voo['id'])); ?>"
-                                   style="color: #fff;"
-                                   target="_blank"
-                                ><?php echo $voo['name']; ?></a>
-                            </span>&nbsp;
-                        <?php endforeach; endif; else: echo "" ;endif; ?>
+                       <?php echo $vo['category']; ?>
                     </td>
-                    <td><?php echo $vo['user_nickname']; ?></td>
-                    <td><?php echo (isset($vo['post_hits']) && ($vo['post_hits'] !== '')?$vo['post_hits']:0); ?></td>
+
+
+
                     <td>
-                        <?php if(!(empty($vo['comment_count']) || (($vo['comment_count'] instanceof \think\Collection || $vo['comment_count'] instanceof \think\Paginator ) && $vo['comment_count']->isEmpty()))): ?>
-                            <?php echo (isset($vo['comment_count']) && ($vo['comment_count'] !== '')?$vo['comment_count']:'0'); ?>
-                            <!--<a href="javascript:parent.openIframeDialog('<?php echo url('comment/commentadmin/index',array('post_id'=>$vo['id'])); ?>','评论列表')"><?php echo $vo['comment_count']; ?></a>-->
-                            <?php else: ?>
-                            <?php echo (isset($vo['comment_count']) && ($vo['comment_count'] !== '')?$vo['comment_count']:'0'); endif; ?>
-                    </td>
-                    <td>
-                        <?php if(!(empty($vo['post_keywords']) || (($vo['post_keywords'] instanceof \think\Collection || $vo['post_keywords'] instanceof \think\Paginator ) && $vo['post_keywords']->isEmpty()))): ?>
+                        <?php if(!(empty($vo['keyw']) || (($vo['keyw'] instanceof \think\Collection || $vo['keyw'] instanceof \think\Paginator ) && $vo['keyw']->isEmpty()))): ?>
                             <i class="fa fa-check fa-fw"></i>
                             <?php else: ?>
                             <i class="fa fa-close fa-fw"></i>
-                        <?php endif; if(!(empty($vo['post_source']) || (($vo['post_source'] instanceof \think\Collection || $vo['post_source'] instanceof \think\Paginator ) && $vo['post_source']->isEmpty()))): ?>
+                        <?php endif; if(!(empty($vo['desc']) || (($vo['desc'] instanceof \think\Collection || $vo['desc'] instanceof \think\Paginator ) && $vo['desc']->isEmpty()))): ?>
                             <i class="fa fa-check fa-fw"></i>
                             <?php else: ?>
                             <i class="fa fa-close fa-fw"></i>
-                        <?php endif; if(!(empty($vo['post_excerpt']) || (($vo['post_excerpt'] instanceof \think\Collection || $vo['post_excerpt'] instanceof \think\Paginator ) && $vo['post_excerpt']->isEmpty()))): ?>
-                            <i class="fa fa-check fa-fw"></i>
-                            <?php else: ?>
-                            <i class="fa fa-close fa-fw"></i>
-                        <?php endif; if(!(empty($vo['more']['thumbnail']) || (($vo['more']['thumbnail'] instanceof \think\Collection || $vo['more']['thumbnail'] instanceof \think\Paginator ) && $vo['more']['thumbnail']->isEmpty()))): ?>
-                            <a href="javascript:parent.imagePreviewDialog('<?php echo cmf_get_image_preview_url($vo['more']['thumbnail']); ?>');">
+                        <?php endif; if(!(empty($vo['thumb']) || (($vo['thumb'] instanceof \think\Collection || $vo['thumb'] instanceof \think\Paginator ) && $vo['thumb']->isEmpty()))): ?>
                                 <i class="fa fa-photo fa-fw"></i>
                             </a>
                             <?php else: ?>
@@ -266,27 +232,27 @@
                         <?php endif; ?>
                     </td>
                     <td>
-                        <?php if(!(empty($vo['update_time']) || (($vo['update_time'] instanceof \think\Collection || $vo['update_time'] instanceof \think\Paginator ) && $vo['update_time']->isEmpty()))): ?>
-                            <?php echo date('Y-m-d H:i',$vo['update_time']); endif; ?>
+                        <?php if(!(empty($vo['uptime']) || (($vo['uptime'] instanceof \think\Collection || $vo['uptime'] instanceof \think\Paginator ) && $vo['uptime']->isEmpty()))): ?>
+                            <?php echo date('Y-m-d H:i',$vo['uptime']); endif; ?>
 
                     </td>
                     <td>
-                        <?php if(empty($vo['published_time']) || (($vo['published_time'] instanceof \think\Collection || $vo['published_time'] instanceof \think\Paginator ) && $vo['published_time']->isEmpty())): ?>
+                        <?php if(empty($vo['ptime']) || (($vo['ptime'] instanceof \think\Collection || $vo['ptime'] instanceof \think\Paginator ) && $vo['ptime']->isEmpty())): ?>
                             未发布
                             <?php else: ?>
-                            <?php echo date('Y-m-d H:i',$vo['published_time']); endif; ?>
+                            <?php echo date('Y-m-d H:i',$vo['ptime']); endif; ?>
 
                     </td>
                     <td>
-                        <?php if(!(empty($vo['post_status']) || (($vo['post_status'] instanceof \think\Collection || $vo['post_status'] instanceof \think\Paginator ) && $vo['post_status']->isEmpty()))): ?>
+                        <?php if(!(empty($vo['status']) || (($vo['status'] instanceof \think\Collection || $vo['status'] instanceof \think\Paginator ) && $vo['status']->isEmpty()))): ?>
                             <a data-toggle="tooltip" title="已发布"><i class="fa fa-check"></i></a>
                             <?php else: ?>
                             <a data-toggle="tooltip" title="未发布"><i class="fa fa-close"></i></a>
-                        <?php endif; if(!(empty($vo['is_top']) || (($vo['is_top'] instanceof \think\Collection || $vo['is_top'] instanceof \think\Paginator ) && $vo['is_top']->isEmpty()))): ?>
+                        <?php endif; if(!(empty($vo['top']) || (($vo['top'] instanceof \think\Collection || $vo['top'] instanceof \think\Paginator ) && $vo['top']->isEmpty()))): ?>
                             <a data-toggle="tooltip" title="已置顶"><i class="fa fa-arrow-up"></i></a>
                             <?php else: ?>
                             <a data-toggle="tooltip" title="未置顶"><i class="fa fa-arrow-down"></i></a>
-                        <?php endif; if(!(empty($vo['recommended']) || (($vo['recommended'] instanceof \think\Collection || $vo['recommended'] instanceof \think\Paginator ) && $vo['recommended']->isEmpty()))): ?>
+                        <?php endif; if(!(empty($vo['rec']) || (($vo['rec'] instanceof \think\Collection || $vo['rec'] instanceof \think\Paginator ) && $vo['rec']->isEmpty()))): ?>
                             <a data-toggle="tooltip" title="已推荐"><i class="fa fa-thumbs-up"></i></a>
                             <?php else: ?>
                             <a data-toggle="tooltip" title="未推荐"><i class="fa fa-thumbs-down"></i></a>
@@ -298,26 +264,7 @@
                     </td>
                 </tr>
             <?php endforeach; endif; else: echo "" ;endif; ?>
-            <tfoot>
-            <tr>
-                <th width="15"><label><input type="checkbox" class="js-check-all" data-direction="x"
-                                             data-checklist="js-check-x"></label></th>
-                <?php if(!(empty($category) || (($category instanceof \think\Collection || $category instanceof \think\Paginator ) && $category->isEmpty()))): ?>
-                    <th width="50"><?php echo lang('SORT'); ?></th>
-                <?php endif; ?>
-                <th width="50">ID</th>
-                <th>标题</th>
-                <th>分类</th>
-                <th width="50">作者</th>
-                <th width="65">点击量</th>
-                <th width="65">评论量</th>
-                <th width="160">关键字/来源<br>摘要/缩略图</th>
-                <th width="130">更新时间</th>
-                <th width="130">发布时间</th>
-                <th width="70">状态</th>
-                <th width="90">操作</th>
-            </tr>
-            </tfoot>
+
         </table>
         <div class="table-actions">
             <?php if(!(empty($category) || (($category instanceof \think\Collection || $category instanceof \think\Paginator ) && $category->isEmpty()))): ?>

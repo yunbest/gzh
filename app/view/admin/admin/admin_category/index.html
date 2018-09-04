@@ -13,7 +13,7 @@
         <table class="table table-hover table-bordered table-list">
             <thead>
             <tr>
-                <th width="50">排序</th>
+
                 <th width="50">ID</th>
                 <th>分类名称</th>
                 <th>描述</th>
@@ -22,11 +22,11 @@
 
             <volist name="vo" id="vo">
                 <tr class="listAjax-{$vo.id}"  onclick="categoryAjax({$vo.id})" id="append{$vo.id}" hd="0">
-                    <th width="50">{$vo.list_order}</th>
-                    <th width="50">{$vo.id}</th>
-                    <th>{$vo.name}</th>
-                    <th>{$vo.description}</th>
-                    <th width="180"><a href="{:url('AdminCategory/add',['id'=>$vo.id])}">{:lang('ADD_SUB_MENU')}</a>&nbsp&nbsp<a href="{:url('AdminCategory/edit',['id'=>$vo.id])}">编辑</a>&nbsp&nbsp<a class="js-ajax-delete" href="{:url('AdminCategory/delete',['id'=>$vo.id])}">删除</a></th>
+
+                    <td width="50">{$vo.id}</td>
+                    <td>{$vo.title}</td>
+                    <td>{$vo.desc}</td>
+                    <td width="180"><a href="{:url('AdminCategory/add',['id'=>$vo.id])}">{:lang('ADD_SUB_MENU')}</a>&nbsp&nbsp<a href="{:url('AdminCategory/edit',['id'=>$vo.id])}">编辑</a>&nbsp&nbsp<a class="js-ajax-delete" href="{:url('AdminCategory/delete',['id'=>$vo.id])}">删除</a></td>
                 </tr>
             </volist>
 
@@ -43,7 +43,7 @@
     function categoryAjax(id) {
         var hd = $(".listAjax-"+id).attr("hd");
         if(hd == 1){
-           $(".a").hide()
+           $(".a"+id).hide()
             $(".listAjax-" + id).attr("hd", "0");
         }else {
             var url = "{:url('AdminCategory/ajax')}";
@@ -54,10 +54,9 @@
                 type: 'post',
                 success(data,) {
                     var html = data
-
-
                     $(".listAjax-" + id).after(html)
                     $(".listAjax-" + id).attr("hd", "1");
+                    $(".right-"+id).attr("style","text-indent:20px")
 
                 }
             })

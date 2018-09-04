@@ -13,7 +13,7 @@
 
 
                 <volist name="re" id="re">
-                    <option value="{$re.id}">{$re.name}</option>
+                    <option value="{$re.id}">{$re.title}</option>
                 </volist>>
 
 
@@ -50,7 +50,7 @@
                     type:'post',
                     success:function (re) {
                         $('#house').html($.map(re,function (value,key) {
-                            return "<option value='"+value.id+"'>"+value.name+"</option>";
+                            return "<option value='"+value.id+"'>"+value.title+"</option>";
                         }));
                         $('#erji').show();
                     }
@@ -106,16 +106,11 @@
                         <input type="checkbox" class="js-check-all" data-direction="x" data-checklist="js-check-x">
                     </label>
                 </th>
-                <notempty name="category">
-                    <th width="50">{:lang('SORT')}</th>
-                </notempty>
+
                 <th width="50">ID</th>
                 <th>标题</th>
                 <th>分类</th>
-                <th width="50">作者</th>
-                <th width="65">点击量</th>
-                <th width="65">评论量</th>
-                <th width="160">关键字/来源<br>摘要/缩略图</th>
+                <th width="160">关键字/描述/缩略图</th>
                 <th width="130">更新时间</th>
                 <th width="130">发布时间</th>
                 <th width="70">状态</th>
@@ -129,60 +124,32 @@
                                value="{$vo.id}" title="ID:{$vo.id}">
                     </td>
                     <notempty name="category">
-                        <td>
-                            <input name="list_orders[{$vo.post_category_id}]" class="input-order" type="text"
-                                   value="{$vo.list_order}">
-                        </td>
+
                     </notempty>
                     <td><b>{$vo.id}</b></td>
                     <td>
-                        <notempty name="category">
-                            <a href="{:cmf_url('portal/Article/index',array('id'=>$vo['id'],'cid'=>$vo['category_id']))}"
-                               target="_blank">{$vo.post_title}</a>
-                            <else/>
-                            <a href="{:cmf_url('portal/Article/index',array('id'=>$vo['id']))}"
-                               target="_blank">{$vo.post_title}</a>
-                        </notempty>
+                        {$vo.title}
                     </td>
                     <td>
-                        <foreach name="vo.categories" item="voo">
-                            <span class="label label-default">
-                                <a href="{:cmf_url('portal/List/index',array('id'=>$voo['id']))}"
-                                   style="color: #fff;"
-                                   target="_blank"
-                                >{$voo.name}</a>
-                            </span>&nbsp;
-                        </foreach>
+                       {$vo.category}
                     </td>
-                    <td>{$vo.user_nickname}</td>
-                    <td>{$vo.post_hits|default=0}</td>
+
+
+
                     <td>
-                        <notempty name="vo.comment_count">
-                            {$vo.comment_count|default='0'}
-                            <!--<a href="javascript:parent.openIframeDialog('{:url('comment/commentadmin/index',array('post_id'=>$vo['id']))}','评论列表')">{$vo.comment_count}</a>-->
-                            <else/>
-                            {$vo.comment_count|default='0'}
-                        </notempty>
-                    </td>
-                    <td>
-                        <notempty name="vo.post_keywords">
-                            <i class="fa fa-check fa-fw"></i>
-                            <else/>
-                            <i class="fa fa-close fa-fw"></i>
-                        </notempty>
-                        <notempty name="vo.post_source">
-                            <i class="fa fa-check fa-fw"></i>
-                            <else/>
-                            <i class="fa fa-close fa-fw"></i>
-                        </notempty>
-                        <notempty name="vo.post_excerpt">
+                        <notempty name="vo.keyw">
                             <i class="fa fa-check fa-fw"></i>
                             <else/>
                             <i class="fa fa-close fa-fw"></i>
                         </notempty>
 
-                        <notempty name="vo.more.thumbnail">
-                            <a href="javascript:parent.imagePreviewDialog('{:cmf_get_image_preview_url($vo.more.thumbnail)}');">
+                        <notempty name="vo.desc">
+                            <i class="fa fa-check fa-fw"></i>
+                            <else/>
+                            <i class="fa fa-close fa-fw"></i>
+                        </notempty>
+
+                        <notempty name="vo.thumb">
                                 <i class="fa fa-photo fa-fw"></i>
                             </a>
                             <else/>
@@ -190,31 +157,31 @@
                         </notempty>
                     </td>
                     <td>
-                        <notempty name="vo.update_time">
-                            {:date('Y-m-d H:i',$vo['update_time'])}
+                        <notempty name="vo.uptime">
+                            {:date('Y-m-d H:i',$vo['uptime'])}
                         </notempty>
 
                     </td>
                     <td>
-                        <empty name="vo.published_time">
+                        <empty name="vo.ptime">
                             未发布
                             <else/>
-                            {:date('Y-m-d H:i',$vo['published_time'])}
+                            {:date('Y-m-d H:i',$vo['ptime'])}
                         </empty>
 
                     </td>
                     <td>
-                        <notempty name="vo.post_status">
+                        <notempty name="vo.status">
                             <a data-toggle="tooltip" title="已发布"><i class="fa fa-check"></i></a>
                             <else/>
                             <a data-toggle="tooltip" title="未发布"><i class="fa fa-close"></i></a>
                         </notempty>
-                        <notempty name="vo.is_top">
+                        <notempty name="vo.top">
                             <a data-toggle="tooltip" title="已置顶"><i class="fa fa-arrow-up"></i></a>
                             <else/>
                             <a data-toggle="tooltip" title="未置顶"><i class="fa fa-arrow-down"></i></a>
                         </notempty>
-                        <notempty name="vo.recommended">
+                        <notempty name="vo.rec">
                             <a data-toggle="tooltip" title="已推荐"><i class="fa fa-thumbs-up"></i></a>
                             <else/>
                             <a data-toggle="tooltip" title="未推荐"><i class="fa fa-thumbs-down"></i></a>
@@ -226,26 +193,7 @@
                     </td>
                 </tr>
             </foreach>
-            <tfoot>
-            <tr>
-                <th width="15"><label><input type="checkbox" class="js-check-all" data-direction="x"
-                                             data-checklist="js-check-x"></label></th>
-                <notempty name="category">
-                    <th width="50">{:lang('SORT')}</th>
-                </notempty>
-                <th width="50">ID</th>
-                <th>标题</th>
-                <th>分类</th>
-                <th width="50">作者</th>
-                <th width="65">点击量</th>
-                <th width="65">评论量</th>
-                <th width="160">关键字/来源<br>摘要/缩略图</th>
-                <th width="130">更新时间</th>
-                <th width="130">发布时间</th>
-                <th width="70">状态</th>
-                <th width="90">操作</th>
-            </tr>
-            </tfoot>
+
         </table>
         <div class="table-actions">
             <notempty name="category">

@@ -1,4 +1,4 @@
-<?php if (!defined('THINK_PATH')) exit(); /*a:2:{s:46:"app/view/admin/admin\admin_category\index.html";i:1536054986;s:48:"F:\myapp\wxgzh\app\view\admin\public\header.html";i:1535607506;}*/ ?>
+<?php if (!defined('THINK_PATH')) exit(); /*a:2:{s:36:"app/view/admin/admin\menu\index.html";i:1535607503;s:48:"F:\myapp\wxgzh\app\view\admin\public\header.html";i:1535607506;}*/ ?>
 <!DOCTYPE html>
 <html>
 <head>
@@ -82,68 +82,56 @@
     <?php endif; ?>
 </head>
 <body>
-<div class="wrap">
+<div class="wrap js-check-wrap">
     <ul class="nav nav-tabs">
-        <li class="active"><a href="<?php echo url('AdminCategory/index'); ?>">分类管理</a></li>
-        <li><a href="<?php echo url('AdminCategory/add'); ?>">添加分类</a></li>
+        <li class="active"><a href="<?php echo url('Menu/index'); ?>">后台菜单</a></li>
+        <li><a href="<?php echo url('Menu/add'); ?>">添加菜单</a></li>
+        <li><a href="<?php echo url('Menu/lists'); ?>">所有菜单</a></li>
     </ul>
-    <form method="post" class="js-ajax-form" action="<?php echo url('AdminCategory/listOrder'); ?>">
+    <form class="js-ajax-form" action="<?php echo url('Menu/listOrder'); ?>" method="post">
         <div class="table-actions">
-            <button type="submit" class="btn btn-primary btn-sm js-ajax-submit"><?php echo lang('SORT'); ?></button>
+            <button class="btn btn-primary btn-sm js-ajax-submit" type="submit"><?php echo lang('SORT'); ?></button>
         </div>
-        <table class="table table-hover table-bordered table-list">
+        <table class="table table-hover table-bordered table-list" id="menus-table">
             <thead>
             <tr>
-
+                <th width="80"><?php echo lang('SORT'); ?></th>
                 <th width="50">ID</th>
-                <th>分类名称</th>
-                <th>描述</th>
-                <th width="180">操作</th>
+                <th><?php echo lang('NAME'); ?></th>
+                <th>操作</th>
+                <th width="80"><?php echo lang('STATUS'); ?></th>
+                <th width="180"><?php echo lang('ACTIONS'); ?></th>
             </tr>
-
-            <?php if(is_array($vo) || $vo instanceof \think\Collection || $vo instanceof \think\Paginator): $i = 0; $__LIST__ = $vo;if( count($__LIST__)==0 ) : echo "" ;else: foreach($__LIST__ as $key=>$vo): $mod = ($i % 2 );++$i;?>
-                <tr class="listAjax-<?php echo $vo['id']; ?>"  onclick="categoryAjax(<?php echo $vo['id']; ?>)" id="append<?php echo $vo['id']; ?>" hd="0">
-
-                    <td width="50"><?php echo $vo['id']; ?></td>
-                    <td><?php echo $vo['title']; ?></td>
-                    <td><?php echo $vo['desc']; ?></td>
-                    <td width="180"><a href="<?php echo url('AdminCategory/add',['id'=>$vo['id']]); ?>"><?php echo lang('ADD_SUB_MENU'); ?></a>&nbsp&nbsp<a href="<?php echo url('AdminCategory/edit',['id'=>$vo['id']]); ?>">编辑</a>&nbsp&nbsp<a class="js-ajax-delete" href="<?php echo url('AdminCategory/delete',['id'=>$vo['id']]); ?>">删除</a></td>
-                </tr>
-            <?php endforeach; endif; else: echo "" ;endif; ?>
-
             </thead>
-
-
-
+            <tbody>
+            <?php echo $category; ?>
+            </tbody>
+            <tfoot>
+            <tr>
+                <th width="80"><?php echo lang('SORT'); ?></th>
+                <th width="50">ID</th>
+                <th><?php echo lang('NAME'); ?></th>
+                <th>操作</th>
+                <th width="80"><?php echo lang('STATUS'); ?></th>
+                <th width="180"><?php echo lang('ACTIONS'); ?></th>
+            </tr>
+            </tfoot>
         </table>
-
+        <div class="table-actions">
+            <button class="btn btn-primary btn-sm js-ajax-submit" type="submit"><?php echo lang('SORT'); ?></button>
+        </div>
     </form>
 </div>
-<script>
-
-    function categoryAjax(id) {
-        var hd = $(".listAjax-"+id).attr("hd");
-        if(hd == 1){
-           $(".a"+id).hide()
-            $(".listAjax-" + id).attr("hd", "0");
-        }else {
-            var url = "<?php echo url('AdminCategory/ajax'); ?>";
-            $.ajax({
-                url: url,
-                data: {'id': id},
-                dataType: 'json',
-                type: 'post',
-                success(data,) {
-                    var html = data
-                    $(".listAjax-" + id).after(html)
-                    $(".listAjax-" + id).attr("hd", "1");
-                    $(".right-"+id).attr("style","text-indent:20px")
-
-                }
-            })
-        }
-    }
-</script>
 <script src="/static/js/admin.js"></script>
+<script>
+    $(document).ready(function() {
+        Wind.css('treeTable');
+        Wind.use('treeTable', function() {
+            $("#menus-table").treeTable({
+                indent : 20
+            });
+        });
+    });
+</script>
 </body>
 </html>

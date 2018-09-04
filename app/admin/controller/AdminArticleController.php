@@ -31,11 +31,19 @@ class AdminArticleController extends AdminBaseController
 
 
 
-        $CategoryModel = new CategoryModel();
-        $categoryTree        = $CategoryModel->adminCategoryTree($categoryId);
+
+
         //第一级分类
-        $re = Db::name('category')->where('parent_id','0')->select()->toArray();
+        $re = Db::name('category')->where('pid','0')->select()->toArray();
         $this->assign('re',$re);
+        if (is_array($data)){
+            $this->assign('articles',$data);
+
+        }else{
+            $this->assign('articles',$data->items());
+
+        }
+
         $this->assign('start_time', isset($param['start_time']) ? $param['start_time'] : '');
         $this->assign('end_time', isset($param['end_time']) ? $param['end_time'] : '');
         $this->assign('keyword', isset($param['keyword']) ? $param['keyword'] : '');
@@ -53,7 +61,7 @@ class AdminArticleController extends AdminBaseController
      */
     public function add()
     {
-        $re = Db::name('category')->where('parent_id','0')->select()->toArray();
+        $re = Db::name('category')->where('pid','0')->select()->toArray();
         $this->assign('re',$re);
         return $this->fetch();
     }
@@ -67,9 +75,11 @@ class AdminArticleController extends AdminBaseController
             $data   = $this->request->param();
 
             //状态只能设置默认值。未发布、未置顶、未推荐
-            $data['article']['article_status'] = 0;
-            $data['article']['is_top'] = 0;
-            $data['article']['recommended'] = 0;
+            $data['article']['status'] = 0;
+            $data['article']['top'] = 0;
+            $data['article']['rec'] = 0;
+            $data['article']['is_del'] = 0;
+            $data['article']['ctime'] = time();
             //判断是否用二级分类
 if ($data['article']['categories_erji']){
     $data['article']['categories'] = $data['article']['categories_erji'];
@@ -84,31 +94,18 @@ if ($data['article']['categories_erji']){
             $ArticleModel = new ArticleModel();
 
             if (!empty($data['photo_names']) && !empty($data['photo_urls'])) {
-                $data['article']['more']['photos'] = [];
+
                 foreach ($data['photo_urls'] as $key => $url) {
-                    $photoUrl = cmf_asset_relative_url($url);
-                    array_push($data['article']['more']['photos'], ["url" => $photoUrl, "name" => $data['photo_names'][$key]]);
+                    $photoUrl[] = cmf_asset_relative_url($url);
+
                 }
+               $data['article']['pic_urls'] =  implode(',',$photoUrl);
             }
 
-            if (!empty($data['file_names']) && !empty($data['file_urls'])) {
-                $data['article']['more']['files'] = [];
-                foreach ($data['file_urls'] as $key => $url) {
-                    $fileUrl = cmf_asset_relative_url($url);
-                    array_push($data['article']['more']['files'], ["url" => $fileUrl, "name" => $data['file_names'][$key]]);
-                }
-            }
 
 
 
             $ArticleModel->adminAddArticle($data['article'], $data['article']['categories']);
-
-            $data['article']['id'] = $ArticleModel->id;
-//            $hookParam          = [
-//                'is_add'  => true,
-//                'article' => $data['post']
-//            ];
-//            hook('portal_admin_after_save_article', $hookParam);
 
 
             $this->success('添加成功!', url('AdminArticle/edit', ['id' => $ArticleModel->id]));
@@ -121,19 +118,23 @@ if ($data['article']['categories_erji']){
      */
     public function edit()
     {
+
+        //第一级分类
+        $re = Db::name('category')->where('pid','0')->select()->toArray();
+        $this->assign('re',$re);
         $id = $this->request->param('id', 0, 'intval');
 
-        $PostModel = new PostModel();
-        $post            = $PostModel->where('id', $id)->find();
-        $postCategories  = $post->categories()->alias('a')->column('a.name', 'a.id');
-        $postCategoryIds = implode(',', array_keys($postCategories));
+        $Article = new ArticleModel();
+        $data            = $Article->where('id', $id)->find()->toArray();
 
-        $themeModel        = new ThemeModel();
-        $articleThemeFiles = $themeModel->getActionThemeFiles('portal/Article/index');
-        $this->assign('article_theme_files', $articleThemeFiles);
-        $this->assign('post', $post);
-        $this->assign('post_categories', $postCategories);
-        $this->assign('post_category_ids', $postCategoryIds);
+
+
+       $data['pic']= explode(',',$data['pic_urls']);
+
+
+        $this->assign('vo', $data);
+
+
 
         return $this->fetch();
     }
@@ -148,41 +149,31 @@ if ($data['article']['categories_erji']){
             $data   = $this->request->param();
 
             //需要抹除发布、置顶、推荐的修改。
-            unset($data['post']['post_status']);
-            unset($data['post']['is_top']);
-            unset($data['post']['recommended']);
+            unset($data['post']['status']);
+            unset($data['post']['top']);
+            unset($data['post']['rec']);
 
-            $post   = $data['post'];
+            $post   = $data['article'];
             $result = $this->validate($post, 'AdminArticle');
             if ($result !== true) {
                 $this->error($result);
             }
 
-            $PostModel = new PostModel();
+            $ArticleModel = new ArticleModel();
 
             if (!empty($data['photo_names']) && !empty($data['photo_urls'])) {
-                $data['post']['more']['photos'] = [];
+
                 foreach ($data['photo_urls'] as $key => $url) {
-                    $photoUrl = cmf_asset_relative_url($url);
-                    array_push($data['post']['more']['photos'], ["url" => $photoUrl, "name" => $data['photo_names'][$key]]);
+                    $photoUrl[] = cmf_asset_relative_url($url);
+
                 }
+                $data['article']['pic_urls'] =  implode(',',$photoUrl);
             }
 
-            if (!empty($data['file_names']) && !empty($data['file_urls'])) {
-                $data['post']['more']['files'] = [];
-                foreach ($data['file_urls'] as $key => $url) {
-                    $fileUrl = cmf_asset_relative_url($url);
-                    array_push($data['post']['more']['files'], ["url" => $fileUrl, "name" => $data['file_names'][$key]]);
-                }
-            }
 
-            $PostModel->adminEditArticle($data['post'], $data['post']['categories']);
+            $ArticleModel->adminEditArticle($data['article']);
 
-            $hookParam = [
-                'is_add'  => false,
-                'article' => $data['post']
-            ];
-            hook('portal_admin_after_save_article', $hookParam);
+
 
             $this->success('保存成功!');
 
@@ -195,48 +186,25 @@ if ($data['article']['categories_erji']){
     public function delete()
     {
         $param           = $this->request->param();
-        $PostModel = new PostModel();
-
+        $articleModel = new ArticleModel();
+        //单个删除
         if (isset($param['id'])) {
             $id           = $this->request->param('id', 0, 'intval');
-            $result       = $PostModel->where(['id' => $id])->find();
-            $data         = [
-                'object_id'   => $result['id'],
-                'create_time' => time(),
-                'table_name'  => 'portal_post',
-                'name'        => $result['post_title'],
-                'user_id'=>cmf_get_current_admin_id()
-            ];
-            $resultPortal = $PostModel
-                ->where(['id' => $id])
-                ->update(['delete_time' => time()]);
-            if ($resultPortal) {
-                Db::name('portal_category_post')->where(['post_id'=>$id])->update(['status'=>0]);
-                Db::name('portal_tag_post')->where(['post_id'=>$id])->update(['status'=>0]);
 
-                Db::name('recycleBin')->insert($data);
+            $re =    $articleModel
+                ->where(['id' => $id])
+                ->update(['is_del' => 1]);
+            if ($re) {
+                $this->success("删除成功！", '');
             }
-            $this->success("删除成功！", '');
 
         }
-
+        //批量删除
         if (isset($param['ids'])) {
             $ids     = $this->request->param('ids/a');
-            $recycle = $PostModel->where(['id' => ['in', $ids]])->select();
-            $result  = $PostModel->where(['id' => ['in', $ids]])->update(['delete_time' => time()]);
+
+            $result  = $articleModel->where(['id' => ['in', $ids]])->update(['is_del' => 1]);
             if ($result) {
-                Db::name('portal_category_post')->where(['post_id' => ['in', $ids]])->update(['status'=>0]);
-                Db::name('portal_tag_post')->where(['post_id' => ['in', $ids]])->update(['status'=>0]);
-                foreach ($recycle as $value) {
-                    $data = [
-                        'object_id'   => $value['id'],
-                        'create_time' => time(),
-                        'table_name'  => 'portal_post',
-                        'name'        => $value['post_title'],
-                        'user_id'=>cmf_get_current_admin_id()
-                    ];
-                    Db::name('recycleBin')->insert($data);
-                }
                 $this->success("删除成功！", '');
             }
         }
@@ -248,12 +216,12 @@ if ($data['article']['categories_erji']){
     public function publish()
     {
         $param           = $this->request->param();
-        $PostModel = new PostModel();
+        $PostModel = new ArticleModel();
 
         if (isset($param['ids']) && isset($param["yes"])) {
             $ids = $this->request->param('ids/a');
 
-            $PostModel->where(['id' => ['in', $ids]])->update(['post_status' => 1, 'published_time' => time()]);
+            $PostModel->where(['id' => ['in', $ids]])->update(['status' => 1]);
 
             $this->success("发布成功！", '');
         }
@@ -261,7 +229,7 @@ if ($data['article']['categories_erji']){
         if (isset($param['ids']) && isset($param["no"])) {
             $ids = $this->request->param('ids/a');
 
-            $PostModel->where(['id' => ['in', $ids]])->update(['post_status' => 0]);
+            $PostModel->where(['id' => ['in', $ids]])->update(['status' => 0]);
 
             $this->success("取消发布成功！", '');
         }
@@ -274,12 +242,12 @@ if ($data['article']['categories_erji']){
     public function top()
     {
         $param           = $this->request->param();
-        $PostModel = new PostModel();
+        $PostModel = new ArticleModel();
 
         if (isset($param['ids']) && isset($param["yes"])) {
             $ids = $this->request->param('ids/a');
 
-            $PostModel->where(['id' => ['in', $ids]])->update(['is_top' => 1]);
+            $PostModel->where(['id' => ['in', $ids]])->update(['top' => 1]);
 
             $this->success("置顶成功！", '');
 
@@ -288,7 +256,7 @@ if ($data['article']['categories_erji']){
         if (isset($_POST['ids']) && isset($param["no"])) {
             $ids = $this->request->param('ids/a');
 
-            $PostModel->where(['id' => ['in', $ids]])->update(['is_top' => 0]);
+            $PostModel->where(['id' => ['in', $ids]])->update(['top' => 0]);
 
             $this->success("取消置顶成功！", '');
         }
@@ -300,12 +268,12 @@ if ($data['article']['categories_erji']){
     public function recommend()
     {
         $param           = $this->request->param();
-        $PostModel = new PostModel();
+        $PostModel = new ArticleModel();
 
         if (isset($param['ids']) && isset($param["yes"])) {
             $ids = $this->request->param('ids/a');
 
-            $PostModel->where(['id' => ['in', $ids]])->update(['recommended' => 1]);
+            $PostModel->where(['id' => ['in', $ids]])->update(['rec' => 1]);
 
             $this->success("推荐成功！", '');
 
@@ -313,31 +281,14 @@ if ($data['article']['categories_erji']){
         if (isset($param['ids']) && isset($param["no"])) {
             $ids = $this->request->param('ids/a');
 
-            $PostModel->where(['id' => ['in', $ids]])->update(['recommended' => 0]);
+            $PostModel->where(['id' => ['in', $ids]])->update(['rec' => 0]);
 
             $this->success("取消推荐成功！", '');
 
         }
     }
 
-    /**
-     * 文章排序
-     */
-    public function listOrder()
-    {
-        parent::listOrders(Db::name('portal_category_post'));
-        $this->success("排序更新成功！", '');
-    }
 
-    public function move()
-    {
-
-    }
-
-    public function copy()
-    {
-
-    }
 
 
 }

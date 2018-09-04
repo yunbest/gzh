@@ -1,4 +1,85 @@
-<include file="public@header"/>
+<?php if (!defined('THINK_PATH')) exit(); /*a:2:{s:44:"app/view/admin/admin\admin_article\edit.html";i:1536052757;s:48:"F:\myapp\wxgzh\app\view\admin\public\header.html";i:1535607506;}*/ ?>
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <!-- Set render engine for 360 browser -->
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- HTML5 shim for IE8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <![endif]-->
+
+
+    <link href="/app/view/admin/public/assets/themes/<?php echo cmf_get_admin_style(); ?>/bootstrap.min.css" rel="stylesheet">
+    <link href="/app/view/admin/public/assets/simpleboot3/css/simplebootadmin.css" rel="stylesheet">
+    <link href="/static/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <!--[if lt IE 9]>
+    <script src="https://cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    <style>
+        form .input-order {
+            margin-bottom: 0px;
+            padding: 0 2px;
+            width: 42px;
+            font-size: 12px;
+        }
+
+        form .input-order:focus {
+            outline: none;
+        }
+
+        .table-actions {
+            margin-top: 5px;
+            margin-bottom: 5px;
+            padding: 0px;
+        }
+
+        .table-list {
+            margin-bottom: 0px;
+        }
+
+        .form-required {
+            color: red;
+        }
+    </style>
+    <script type="text/javascript">
+        //全局变量
+        var GV = {
+            ROOT: "/",
+            WEB_ROOT: "/",
+            JS_ROOT: "static/js/",
+            APP: '<?php echo \think\Request::instance()->module(); ?>'/*当前应用名*/
+        };
+    </script>
+    <script src="/app/view/admin/public/assets/js/jquery-1.10.2.min.js"></script>
+    <script src="/static/js/wind.js"></script>
+    <script src="/app/view/admin/public/assets/js/bootstrap.min.js"></script>
+    <script>
+        Wind.css('artDialog');
+        Wind.css('layer');
+        $(function () {
+            $("[data-toggle='tooltip']").tooltip({
+                container:'body',
+                html:true,
+            });
+            $("li.dropdown").hover(function () {
+                $(this).addClass("open");
+            }, function () {
+                $(this).removeClass("open");
+            });
+        });
+    </script>
+    <?php if(APP_DEBUG): ?>
+        <style>
+            #think_page_trace_open {
+                z-index: 9999;
+            }
+        </style>
+    <?php endif; ?>
 <style type="text/css">
     .pic-list li {
         margin-bottom: 5px;
@@ -29,10 +110,10 @@
 <body>
 <div class="wrap js-check-wrap">
     <ul class="nav nav-tabs">
-        <li><a href="{:url('AdminArticle/index')}">文章管理</a></li>
-        <li class="active"><a href="{:url('AdminArticle/edit')}">编辑文章</a></li>
+        <li><a href="<?php echo url('AdminArticle/index'); ?>">文章管理</a></li>
+        <li class="active"><a href="<?php echo url('AdminArticle/edit'); ?>">编辑文章</a></li>
     </ul>
-    <form action="{:url('AdminArticle/editPost')}" method="post" class="form-horizontal js-ajax-form margin-top-20">
+    <form action="<?php echo url('AdminArticle/editPost'); ?>" method="post" class="form-horizontal js-ajax-form margin-top-20">
         <div class="row">
             <div class="col-md-6">
                 <table class="table table-bordered">
@@ -44,9 +125,9 @@
                         <td>
                             <select class="form-control" name="article[categories]" id="input-parent" onchange="category()">
 
-                                <volist name="re" id="re">
-                                    <option value="{$re.id}">{$re.title}</option>
-                                </volist>>
+                                <?php if(is_array($re) || $re instanceof \think\Collection || $re instanceof \think\Paginator): $i = 0; $__LIST__ = $re;if( count($__LIST__)==0 ) : echo "" ;else: foreach($__LIST__ as $key=>$re): $mod = ($i % 2 );++$i;?>
+                                    <option value="<?php echo $re['id']; ?>"><?php echo $re['title']; ?></option>
+                                <?php endforeach; endif; else: echo "" ;endif; ?>>
                             </select>
                         </td>
 
@@ -66,18 +147,18 @@
                         </td>
 
                     </tr>
-                    <input type="hidden" name="article[id]" value="{$vo.id}">
+                    <input type="hidden" name="article[id]" value="<?php echo $vo['id']; ?>">
                     <tr>
                         <th>标题<span class="form-required">*</span></th>
                         <td>
                             <input class="form-control" type="text" name="article[title]"
-                                   id="title" required value="{$vo.title}" placeholder="请输入标题" />
+                                   id="title" required value="<?php echo $vo['title']; ?>" placeholder="请输入标题" />
                         </td>
                     </tr>
                     <tr>
                         <th>关键词</th>
                         <td>
-                            <input class="form-control" type="text" name="article[keyw]" id="keywords" value="{$vo.keyw}"
+                            <input class="form-control" type="text" name="article[keyw]" id="keywords" value="<?php echo $vo['keyw']; ?>"
                                    placeholder="请输入关键字" >
                             <p class="help-block">多关键词之间用英文逗号隔开</p>
                         </td>
@@ -87,13 +168,13 @@
                         <th>描述</th>
                         <td>
                             <textarea class="form-control" name="article[desc]" style="height: 50px;"
-                                      placeholder="请填写描述" >{$vo.desc}</textarea>
+                                      placeholder="请填写描述" ><?php echo $vo['desc']; ?></textarea>
                         </td>
                     </tr>
                     <tr>
                         <th>内容</th>
                         <td>
-                            <script type="text/plain" id="content" name="article[cont]">{$vo.cont}</script>
+                            <script type="text/plain" id="content" name="article[cont]"><?php echo $vo['cont']; ?></script>
                         </td>
 
                     </tr>
@@ -101,21 +182,18 @@
                         <th>多图上传</th>
                         <td>
                             <ul id="photos" class="pic-list list-unstyled form-inline">
-                                <notempty name="$vo.pic">
-                                    <foreach name="$vo.pic" item="v">
-                                        <php>$img_url=cmf_get_image_preview_url($v);</php>
-                                        <li id="saved-image{$key}">
-                                            <input id="photo-{$key}" type="hidden" name="photo_urls[]"
-                                                   value="{$v}">
-                                            <img id="photo-{$key}-preview"
-                                                 src="{:cmf_get_image_preview_url($v)}"
+                                <?php if(!(empty($vo['pic']) || (($vo['pic'] instanceof \think\Collection || $vo['pic'] instanceof \think\Paginator ) && $vo['pic']->isEmpty()))): if(is_array($vo['pic']) || $vo['pic'] instanceof \think\Collection || $vo['pic'] instanceof \think\Paginator): if( count($vo['pic'])==0 ) : echo "" ;else: foreach($vo['pic'] as $key=>$v): $img_url=cmf_get_image_preview_url($v); ?>
+                                        <li id="saved-image<?php echo $key; ?>">
+                                            <input id="photo-<?php echo $key; ?>" type="hidden" name="photo_urls[]"
+                                                   value="<?php echo $v; ?>">
+                                            <img id="photo-<?php echo $key; ?>-preview"
+                                                 src="<?php echo cmf_get_image_preview_url($v); ?>"
                                                  style="height:36px;width: 36px;"
                                                  onclick="parent.imagePreviewDialog(this.src);">
-                                            <a href="javascript:uploadOneImage('图片上传','#photo-{$key}');">替换</a>
-                                            <a href="javascript:(function(){$('#saved-image{$key}').remove();})();">移除</a>
+                                            <a href="javascript:uploadOneImage('图片上传','#photo-<?php echo $key; ?>');">替换</a>
+                                            <a href="javascript:(function(){$('#saved-image<?php echo $key; ?>').remove();})();">移除</a>
                                         </li>
-                                    </foreach>
-                                </notempty>
+                                    <?php endforeach; endif; else: echo "" ;endif; endif; ?>
                             </ul>
                             <a href="javascript:uploadMultiImage('图片上传','#photos','photos-item-tpl');"
                                class="btn btn-sm btn-default">选择图片</a>
@@ -126,25 +204,25 @@
                         <th>缩略图</th>
                         <td>
 
-                            <input type="hidden" name="article[thumb]" id="thumb" value="{$vo.thumb}">
+                            <input type="hidden" name="article[thumb]" id="thumb" value="<?php echo $vo['thumb']; ?>">
                             <a href="javascript:uploadOneImage('图片上传','#thumbnail');">
-                                <if condition="empty($vo.thumb)">
-                                    <img src="__TMPL__/public/assets/images/default-thumbnail.png"
+                                <?php if(empty($vo['thumb'])): ?>
+                                    <img src="/app/view/admin/public/assets/images/default-thumbnail.png"
                                          id="thumbnail-preview"
                                          width="135" style="cursor: pointer"/>
-                                    <else/>
-                                    <img src="{:cmf_get_image_preview_url($vo.thumb)}"
+                                    <?php else: ?>
+                                    <img src="<?php echo cmf_get_image_preview_url($vo['thumb']); ?>"
                                          id="thumbnail-preview"
                                          width="135" style="cursor: pointer"/>
-                                </if>
+                                <?php endif; ?>
                             </a>
                         </td>
                     </tr>
                 </table>
                 <div class="form-group">
                     <div class="col-sm-offset-2 col-sm-10">
-                        <button type="submit" class="btn btn-primary js-ajax-submit">{:lang('ADD')}</button>
-                        <a class="btn btn-default" href="{:url('AdminArticle/index')}">{:lang('BACK')}</a>
+                        <button type="submit" class="btn btn-primary js-ajax-submit"><?php echo lang('ADD'); ?></button>
+                        <a class="btn btn-default" href="<?php echo url('AdminArticle/index'); ?>"><?php echo lang('BACK'); ?></a>
                     </div>
                 </div>
             </div>
@@ -153,14 +231,14 @@
     </form>
 </div>
 
-<script type="text/javascript" src="__STATIC__/js/admin.js"></script>
+<script type="text/javascript" src="/static/js/admin.js"></script>
 <script type="text/javascript">
     //编辑器路径定义
     var editorURL = GV.WEB_ROOT;
 
 </script>
-<script type="text/javascript" src="__STATIC__/js/ueditor/ueditor.config.js"></script>
-<script type="text/javascript" src="__STATIC__/js/ueditor/ueditor.all.min.js"></script>
+<script type="text/javascript" src="/static/js/ueditor/ueditor.config.js"></script>
+<script type="text/javascript" src="/static/js/ueditor/ueditor.all.min.js"></script>
 <script type="text/javascript">
     $(function () {
 
@@ -172,7 +250,7 @@
         }
 
         $('.btn-cancel-thumbnail').click(function () {
-            $('#thumbnail-preview').attr('src', '__TMPL__/public/assets/images/default-thumbnail.png');
+            $('#thumbnail-preview').attr('src', '/app/view/admin/public/assets/images/default-thumbnail.png');
             $('#thumbnail').val('');
         });
 
@@ -180,7 +258,7 @@
 
     function category() {
         var id = $('#input-parent').val();
-        var url = "{:url('AdminCategory/selectAjax')}"
+        var url = "<?php echo url('AdminCategory/selectAjax'); ?>"
         if(id > 0){
             $.ajax({
                 url:url,
@@ -203,7 +281,7 @@
 
     function doSelectCategory() {
         var selectedCategoriesId = $('#js-categories-id-input').val();
-        openIframeLayer("{:url('AdminCategory/select')}?ids=" + selectedCategoriesId, '请选择分类', {
+        openIframeLayer("<?php echo url('AdminCategory/select'); ?>?ids=" + selectedCategoriesId, '请选择分类', {
             area: ['700px', '400px'],
             btn: ['确定', '取消'],
             yes: function (index, layero) {

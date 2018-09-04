@@ -18,20 +18,13 @@ class CategoryModel extends Model
         $result = true;
         self::startTrans();
         try {
-if (!empty($data['parent_id_erji'])){
-    $data['parent_id'] = $data['parent_id_erji'];
-}
+
+
+
+            $data['ctime'] = time();
             $this->allowField(true)->save($data);
             $id = $this->id;
-            if (empty($data['parent_id'])) {
 
-                $this->where(['id' => $id])->update(['path' => '0-' . $id]);
-            }else {
-
-                $parentPath = $this->where('id', intval($data['parent_id']))->value('path');
-                $this->where(['id' => $id])->update(['path' => "$parentPath-$id"]);
-
-            }
             self::commit();
         } catch (\Exception $e) {
             self::rollback();

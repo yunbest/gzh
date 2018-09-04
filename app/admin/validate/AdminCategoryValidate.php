@@ -16,28 +16,14 @@ use think\Validate;
 class AdminCategoryValidate extends Validate
 {
     protected $rule = [
-        'name'  => 'require',
-        'alias' => 'checkAlias',
+        'title'  => 'require',
+
     ];
     protected $message = [
-        'name.require' => '分类名称不能为空',
+        'title.require' => '分类名称不能为空',
     ];
 
-    protected $scene = [
-//        'add'  => ['user_login,user_pass,user_email'],
-//        'edit' => ['user_login,user_email'],
-    ];
 
-    // 自定义验证规则
-    protected function checkAlias($value, $rule, $data)
-    {
-        if (empty($value)) {
-            return true;
-        }
 
-        if (preg_match("/^\d+$/", $value)) {
-            return "别名不能为纯数字!";
-        }
 
-}
 }

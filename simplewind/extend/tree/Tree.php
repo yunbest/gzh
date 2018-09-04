@@ -402,7 +402,7 @@ class Tree
         static $list = [];
         foreach ($array as $key => $value) {
             //第一次遍历,找到父节点为根节点的节点 也就是pid=0的节点
-            if ($value['parent_id'] == $pid) {
+            if ($value['pid'] == $pid) {
                 //父节点为根节点的节点,级别为0，也就是第一级
                 $value['level'] = $level;
                 //把数组放到list中
