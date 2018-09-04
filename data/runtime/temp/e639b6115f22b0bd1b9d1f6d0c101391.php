@@ -1,4 +1,4 @@
-<?php if (!defined('THINK_PATH')) exit(); /*a:2:{s:43:"app/view/admin/admin\admin_article\add.html";i:1536042537;s:48:"F:\myapp\wxgzh\app\view\admin\public\header.html";i:1535607506;}*/ ?>
+<?php if (!defined('THINK_PATH')) exit(); /*a:2:{s:43:"app/view/admin/admin\admin_article\add.html";i:1536060677;s:48:"F:\myapp\wxgzh\app\view\admin\public\header.html";i:1535607506;}*/ ?>
 <!DOCTYPE html>
 <html>
 <head>
@@ -122,11 +122,14 @@
 
 
                         <td>
-                            <select class="form-control" name="article[categories]" id="input-parent" onchange="category()">
+                            <select class="form-control" name="article[categories]"  id="category_1" onchange="change('category_1')">
 
-                                <?php if(is_array($re) || $re instanceof \think\Collection || $re instanceof \think\Paginator): $i = 0; $__LIST__ = $re;if( count($__LIST__)==0 ) : echo "" ;else: foreach($__LIST__ as $key=>$re): $mod = ($i % 2 );++$i;?>
-                                    <option value="<?php echo $re['id']; ?>"><?php echo $re['title']; ?></option>
-                                <?php endforeach; endif; else: echo "" ;endif; ?>>
+
+                                    <option value="0">第一级分类</option>
+                                    <?php if(is_array($re) || $re instanceof \think\Collection || $re instanceof \think\Paginator): $i = 0; $__LIST__ = $re;if( count($__LIST__)==0 ) : echo "" ;else: foreach($__LIST__ as $key=>$re): $mod = ($i % 2 );++$i;?>
+                                        <option value="<?php echo $re['id']; ?>"><?php echo $re['title']; ?></option>
+                                    <?php endforeach; endif; else: echo "" ;endif; ?>>
+                               
                             </select>
                         </td>
 
@@ -134,18 +137,7 @@
 
                     </tr>
 
-                    <tr style="display:none" id="erji">
-                        <th width="100" >次级分类<span class="form-required">*</span></th>
 
-                        <td>
-
-                            <select class="form-control" name="article[categories_erji]" id="house"  >
-
-                            </select>
-
-                        </td>
-
-                    </tr>
                     <tr>
                         <th>标题<span class="form-required">*</span></th>
                         <td>
@@ -209,7 +201,68 @@
         </div>
     </form>
 </div>
+<script>
+    function change(val) {
+        var str = val; //select的id
+        var num; //当前级数
+        var id; // 分类id
+        num = str.substr(9,10);
+        //alert(num);
+        var nownum = parseInt(num)+1; // 将字符串转换为数字
+        // alert(nownum)
+        id = $("#"+str+"").val();
 
+        var r = /^[1-9]+[0-9]*]*$/;　//正整数
+        if (!r.test(id)) {
+            //清空过时的选项
+            $("select").each(function(index){
+                if(index+1 > num) {
+                    $(this).remove();
+                }
+            })
+
+            return false;
+        }
+        var url ="<?php echo url('AdminCategory/selectAjax'); ?>"
+        $.ajax({
+            url:url,
+            data:{'id':id},
+            dataType:'json',
+            type:'post',
+
+            success: function(result){
+                if ( result != 0) {
+                    var html = "<label for=input-parent><span class=form-required>*</span>次级</label><select name=pid[] class=form-control   id=category_"+nownum+"  onChange=change('category_"+nownum+"'); >";
+                    html += "<option>请选择分类 </option>";
+                    var datas = eval(result);
+                    $.each(datas, function(i,val){
+                        html += "<option value='"+val.id+"' >"+val.title+"</option>";
+                    });
+                    html += "</select>";
+
+                    //清空过时的选项
+                    $("select").each(function(index){
+                        if(index+1 > num) {
+                            $(this).remove();
+                        }
+                    })
+                    // alert(html)
+                    $("#select").append(html);
+                } else {
+                    //清空过时的选项
+                    $("select").each(function(index){
+                        if(index+1 > num) {
+                            $(this).remove();
+                        }
+                    })　　　　　　　}
+
+            },
+            error: false
+        });
+
+
+    }
+</script>
 <script type="text/javascript" src="/static/js/admin.js"></script>
 <script type="text/javascript">
     //编辑器路径定义

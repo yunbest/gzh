@@ -43,7 +43,7 @@
     function categoryAjax(id) {
         var hd = $(".listAjax-"+id).attr("hd");
         if(hd == 1){
-           $(".a"+id).hide()
+           $(".a"+id).remove()
             $(".listAjax-" + id).attr("hd", "0");
         }else {
             var url = "{:url('AdminCategory/ajax')}";

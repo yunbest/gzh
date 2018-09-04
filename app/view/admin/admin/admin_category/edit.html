@@ -4,12 +4,12 @@
 <div class="wrap js-check-wrap">
     <ul class="nav nav-tabs">
         <li><a href="{:url('AdminCategory/index')}">分类管理</a></li>
-        <li class="active"><a href="{:url('AdminCategory/add')}">添加分类</a></li>
+        <li class="active"><a href="{:url('AdminCategory/edit')}">编辑分类</a></li>
     </ul>
     <div class="row margin-top-20">
 
         <div class="col-md-3">
-            <form class="js-ajax-form" action="{:url('AdminCategory/addPost')}" method="post">
+            <form class="js-ajax-form" action="{:url('AdminCategory/editPost')}" method="post">
                 <div class="tab-content">
                     <div class="tab-pane active" id="A">
 
@@ -37,7 +37,7 @@
                                     </select>
                                 </div>
                             </div>
-                    
+
                         <script>
                             function category() {
                                 var id = $('#input-parent').val();
@@ -65,7 +65,7 @@
                         <div class="form-group">
                             <label for="input-name"><span class="form-required">*</span>分类名称</label>
                             <div>
-                                <input type="text" class="form-control" id="input-name" name="title">
+                                <input type="text" class="form-control" id="input-name" name="title" value="{$vo.title}">
                             </div>
                         </div>
 
@@ -73,13 +73,13 @@
                         <div class="form-group">
                             <label for="input-description">描述</label>
                             <div>
-                                <textarea class="form-control" name="desc" id="input-description"></textarea>
+                                <textarea class="form-control" name="desc" id="input-description">{$vo.desc}</textarea>
                             </div>
                         </div>
                         <div class="form-group">
                             <label for="input-keyw">关键字</label>
                             <div>
-                                <input class="form-control" name="keyw" id="input-keyw"></input>
+                                <input class="form-control" name="keyw" id="input-keyw" value="{$vo.keyw}"></input>
                             </div>
                         </div>
                         <div class="form-group">
@@ -93,19 +93,25 @@
                             </div>
                         </div>
                         <div class="form-group">
-                            <label for="input-description">缩略图</label>
-                            <div>
-                                <input type="hidden" name="thumb" class="form-control"
-                                       id="js-thumbnail-input">
-                                <div>
-                                    <a href="javascript:uploadOneImage('图片上传','#js-thumbnail-input');">
+
+                            <label for="thumb">缩略图</label>
+
+
+                                <input type="hidden" name="thumb" id="thumb" value="{$vo.thumb}">
+                                <a href="javascript:uploadOneImage('图片上传','#thumbnail');">
+                                    <if condition="empty($vo.thumb)">
                                         <img src="__TMPL__/public/assets/images/default-thumbnail.png"
-                                             id="js-thumbnail-input-preview"
+                                             id="thumbnail-preview"
                                              width="135" style="cursor: pointer"/>
-                                    </a>
-                                </div>
-                            </div>
+                                        <else/>
+                                        <img src="{:cmf_get_image_preview_url($vo.thumb)}"
+                                             id="thumbnail-preview"
+                                             width="135" style="cursor: pointer"/>
+                                    </if>
+                                </a>
+
                         </div>
+
                         <div class="form-group">
                             <button type="submit" class="btn btn-primary js-ajax-submit">{:lang('ADD')}</button>
                             <a class="btn btn-default" href="{:url('AdminCategory/index')}">{:lang('BACK')}</a>

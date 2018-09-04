@@ -1,4 +1,4 @@
-<?php if (!defined('THINK_PATH')) exit(); /*a:2:{s:45:"app/view/admin/admin\admin_category\edit.html";i:1536053170;s:48:"F:\myapp\wxgzh\app\view\admin\public\header.html";i:1535607506;}*/ ?>
+<?php if (!defined('THINK_PATH')) exit(); /*a:2:{s:45:"app/view/admin/admin\admin_category\edit.html";i:1536061786;s:48:"F:\myapp\wxgzh\app\view\admin\public\header.html";i:1535607506;}*/ ?>
 <!DOCTYPE html>
 <html>
 <head>
@@ -85,12 +85,12 @@
 <div class="wrap js-check-wrap">
     <ul class="nav nav-tabs">
         <li><a href="<?php echo url('AdminCategory/index'); ?>">分类管理</a></li>
-        <li class="active"><a href="<?php echo url('AdminCategory/add'); ?>">添加分类</a></li>
+        <li class="active"><a href="<?php echo url('AdminCategory/edit'); ?>">编辑分类</a></li>
     </ul>
     <div class="row margin-top-20">
 
         <div class="col-md-3">
-            <form class="js-ajax-form" action="<?php echo url('AdminCategory/addPost'); ?>" method="post">
+            <form class="js-ajax-form" action="<?php echo url('AdminCategory/editPost'); ?>" method="post">
                 <div class="tab-content">
                     <div class="tab-pane active" id="A">
 
@@ -118,7 +118,7 @@
                                     </select>
                                 </div>
                             </div>
-                    
+
                         <script>
                             function category() {
                                 var id = $('#input-parent').val();
@@ -146,7 +146,7 @@
                         <div class="form-group">
                             <label for="input-name"><span class="form-required">*</span>分类名称</label>
                             <div>
-                                <input type="text" class="form-control" id="input-name" name="title">
+                                <input type="text" class="form-control" id="input-name" name="title" value="<?php echo $vo['title']; ?>">
                             </div>
                         </div>
 
@@ -154,13 +154,13 @@
                         <div class="form-group">
                             <label for="input-description">描述</label>
                             <div>
-                                <textarea class="form-control" name="desc" id="input-description"></textarea>
+                                <textarea class="form-control" name="desc" id="input-description"><?php echo $vo['desc']; ?></textarea>
                             </div>
                         </div>
                         <div class="form-group">
                             <label for="input-keyw">关键字</label>
                             <div>
-                                <input class="form-control" name="keyw" id="input-keyw"></input>
+                                <input class="form-control" name="keyw" id="input-keyw" value="<?php echo $vo['keyw']; ?>"></input>
                             </div>
                         </div>
                         <div class="form-group">
@@ -174,19 +174,25 @@
                             </div>
                         </div>
                         <div class="form-group">
-                            <label for="input-description">缩略图</label>
-                            <div>
-                                <input type="hidden" name="thumb" class="form-control"
-                                       id="js-thumbnail-input">
-                                <div>
-                                    <a href="javascript:uploadOneImage('图片上传','#js-thumbnail-input');">
+
+                            <label for="thumb">缩略图</label>
+
+
+                                <input type="hidden" name="thumb" id="thumb" value="<?php echo $vo['thumb']; ?>">
+                                <a href="javascript:uploadOneImage('图片上传','#thumbnail');">
+                                    <?php if(empty($vo['thumb'])): ?>
                                         <img src="/app/view/admin/public/assets/images/default-thumbnail.png"
-                                             id="js-thumbnail-input-preview"
+                                             id="thumbnail-preview"
                                              width="135" style="cursor: pointer"/>
-                                    </a>
-                                </div>
-                            </div>
+                                        <?php else: ?>
+                                        <img src="<?php echo cmf_get_image_preview_url($vo['thumb']); ?>"
+                                             id="thumbnail-preview"
+                                             width="135" style="cursor: pointer"/>
+                                    <?php endif; ?>
+                                </a>
+
                         </div>
+
                         <div class="form-group">
                             <button type="submit" class="btn btn-primary js-ajax-submit"><?php echo lang('ADD'); ?></button>
                             <a class="btn btn-default" href="<?php echo url('AdminCategory/index'); ?>"><?php echo lang('BACK'); ?></a>

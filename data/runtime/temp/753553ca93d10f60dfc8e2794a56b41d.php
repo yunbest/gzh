@@ -1,4 +1,4 @@
-<?php if (!defined('THINK_PATH')) exit(); /*a:2:{s:46:"app/view/admin/admin\admin_category\index.html";i:1536054986;s:48:"F:\myapp\wxgzh\app\view\admin\public\header.html";i:1535607506;}*/ ?>
+<?php if (!defined('THINK_PATH')) exit(); /*a:2:{s:46:"app/view/admin/admin\admin_category\index.html";i:1536060043;s:48:"F:\myapp\wxgzh\app\view\admin\public\header.html";i:1535607506;}*/ ?>
 <!DOCTYPE html>
 <html>
 <head>
@@ -124,7 +124,7 @@
     function categoryAjax(id) {
         var hd = $(".listAjax-"+id).attr("hd");
         if(hd == 1){
-           $(".a"+id).hide()
+           $(".a"+id).remove()
             $(".listAjax-" + id).attr("hd", "0");
         }else {
             var url = "<?php echo url('AdminCategory/ajax'); ?>";

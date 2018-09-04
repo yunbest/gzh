@@ -61,7 +61,7 @@ class AdminArticleController extends AdminBaseController
      */
     public function add()
     {
-        $re = Db::name('category')->where('pid','0')->select()->toArray();
+        $re = Db::name('category')->where('pid','0')->where('is_del',0)->select()->toArray();
         $this->assign('re',$re);
         return $this->fetch();
     }

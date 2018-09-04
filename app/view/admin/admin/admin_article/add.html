@@ -41,11 +41,14 @@
 
 
                         <td>
-                            <select class="form-control" name="article[categories]" id="input-parent" onchange="category()">
+                            <select class="form-control" name="article[categories]"  id="category_1" onchange="change('category_1')">
 
-                                <volist name="re" id="re">
-                                    <option value="{$re.id}">{$re.title}</option>
-                                </volist>>
+
+                                    <option value="0">第一级分类</option>
+                                    <volist name="re" id="re">
+                                        <option value="{$re.id}">{$re.title}</option>
+                                    </volist>>
+
                             </select>
                         </td>
 
@@ -53,18 +56,7 @@
 
                     </tr>
 
-                    <tr style="display:none" id="erji">
-                        <th width="100" >次级分类<span class="form-required">*</span></th>
 
-                        <td>
-
-                            <select class="form-control" name="article[categories_erji]" id="house"  >
-
-                            </select>
-
-                        </td>
-
-                    </tr>
                     <tr>
                         <th>标题<span class="form-required">*</span></th>
                         <td>
@@ -128,7 +120,68 @@
         </div>
     </form>
 </div>
+<script>
+    function change(val) {
+        var str = val; //select的id
+        var num; //当前级数
+        var id; // 分类id
+        num = str.substr(9,10);
+        //alert(num);
+        var nownum = parseInt(num)+1; // 将字符串转换为数字
+        // alert(nownum)
+        id = $("#"+str+"").val();
 
+        var r = /^[1-9]+[0-9]*]*$/;　//正整数
+        if (!r.test(id)) {
+            //清空过时的选项
+            $("select").each(function(index){
+                if(index+1 > num) {
+                    $(this).remove();
+                }
+            })
+
+            return false;
+        }
+        var url ="{:url('AdminCategory/selectAjax')}"
+        $.ajax({
+            url:url,
+            data:{'id':id},
+            dataType:'json',
+            type:'post',
+
+            success: function(result){
+                if ( result != 0) {
+                    var html = "<label for=input-parent><span class=form-required>*</span>次级</label><select name=pid[] class=form-control   id=category_"+nownum+"  onChange=change('category_"+nownum+"'); >";
+                    html += "<option>请选择分类 </option>";
+                    var datas = eval(result);
+                    $.each(datas, function(i,val){
+                        html += "<option value='"+val.id+"' >"+val.title+"</option>";
+                    });
+                    html += "</select>";
+
+                    //清空过时的选项
+                    $("select").each(function(index){
+                        if(index+1 > num) {
+                            $(this).remove();
+                        }
+                    })
+                    // alert(html)
+                    $("#select").append(html);
+                } else {
+                    //清空过时的选项
+                    $("select").each(function(index){
+                        if(index+1 > num) {
+                            $(this).remove();
+                        }
+                    })　　　　　　　}
+
+            },
+            error: false
+        });
+
+
+    }
+</script>
 <script type="text/javascript" src="__STATIC__/js/admin.js"></script>
 <script type="text/javascript">
     //编辑器路径定义

@@ -40,8 +40,8 @@ class AdminCategoryController extends AdminBaseController
     public function ajax()
     {
          $id = $this->request->param('id','0','intval');
-         $data = Db::name('category')->where('pid',$id)->select()->toArray();
-        $tpl = '';
+         $data = Db::name('category')->where(['pid'=>0,'is_del'=>0])->select()->toArray();
+         $tpl = '';
         foreach ($data as $v){
           $pid =  explode(',',$v['pids']);
           $num = count($pid)-1;
@@ -72,7 +72,8 @@ class AdminCategoryController extends AdminBaseController
     public function add()
     {
         $id = $this->request->param('id','0','intval');
-        $re = Db::name('category')->where('pid','0')->select()->toArray();
+
+        $re = Db::name('category')->where(['pid'=>0,'is_del'=>0])->select()->toArray();
 
         $data = Db::name('category')->where('id',$id)->find();
 
@@ -95,7 +96,9 @@ class AdminCategoryController extends AdminBaseController
         $data = $this->request->param();
         if (is_array($data['pid'])) {
             $pid = end($data['pid']);
+            array_unshift($data['pid'],'0');
             $pids = implode(',', $data['pid']);
+
             $data['pids'] = $pids;
             $data['pid'] = $pid;
         }else{
